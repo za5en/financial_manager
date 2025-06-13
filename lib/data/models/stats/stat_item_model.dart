@@ -6,7 +6,7 @@ part 'stat_item_model.g.dart';
 @freezed
 abstract class StatItemModel with _$StatItemModel {
   const factory StatItemModel({
-    required String categoryId,
+    required int categoryId,
     required String categoryName,
     required String emoji,
     required String amount,
