@@ -11,8 +11,8 @@ abstract class AccountResponseModel with _$AccountResponseModel {
     required String name,
     required String balance,
     required String currency,
-    required StatItemModel incomeStats,
-    required StatItemModel expenseStats,
+    required List<StatItemModel> incomeStats,
+    required List<StatItemModel> expenseStats,
     required String createdAt,
     required String updatedAt,
   }) = _AccountResponseModel;
