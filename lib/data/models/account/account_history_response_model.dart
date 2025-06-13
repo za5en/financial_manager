@@ -11,7 +11,7 @@ abstract class AccountHistoryResponseModel with _$AccountHistoryResponseModel {
     required String accountName,
     required String currency,
     required String currentBalance,
-    required AccountHistoryModel history,
+    required List<AccountHistoryModel> history,
   }) = _AccountHistoryResponseModel;
 
   factory AccountHistoryResponseModel.fromJson(Map<String, Object?> json) =>
