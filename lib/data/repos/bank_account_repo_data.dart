@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:financial_manager/data/enums/change_type.dart';
 import 'package:financial_manager/data/models/account/account_create_request_model.dart';
 import 'package:financial_manager/data/models/account/account_history_model.dart';
 import 'package:financial_manager/data/models/account/account_history_response_model.dart';
@@ -23,6 +24,15 @@ class BankAccountRepoData implements BankAccountRepoDomain {
       createdAt: "2025-06-13T12:37:53.364Z",
       updatedAt: "2025-06-13T12:37:53.364Z",
     ),
+    AccountModel(
+      id: 2,
+      userId: 1,
+      name: "Второй счет",
+      balance: "100.00",
+      currency: "RUB",
+      createdAt: "2025-06-15T12:37:53.364Z",
+      updatedAt: "2025-06-15T12:37:53.364Z",
+    ),
   ];
 
   // список статей дохода
@@ -39,9 +49,15 @@ class BankAccountRepoData implements BankAccountRepoDomain {
   final List<StatItemModel> expenseStats = [
     StatItemModel(
       categoryId: 1,
-      categoryName: "Зарплата",
-      emoji: "💰",
-      amount: "5000.00",
+      categoryName: "Развлечения",
+      emoji: "🎉",
+      amount: "2500.00",
+    ),
+    StatItemModel(
+      categoryId: 2,
+      categoryName: "Рестораны",
+      emoji: "🍴",
+      amount: "2500.00",
     ),
   ];
 
@@ -50,7 +66,7 @@ class BankAccountRepoData implements BankAccountRepoDomain {
     AccountHistoryModel(
       id: 1,
       accountId: 1,
-      changeType: "MODIFICATION",
+      changeType: ChangeType.modification,
       previousState: AccountStateModel(
         id: 1,
         name: "Основной счет",
@@ -155,7 +171,7 @@ class BankAccountRepoData implements BankAccountRepoDomain {
                   AccountHistoryModel(
                     id: 1,
                     accountId: account.id,
-                    changeType: "CREATION",
+                    changeType: ChangeType.creation,
                     newState: AccountStateModel(
                       id: account.id,
                       name: account.name,

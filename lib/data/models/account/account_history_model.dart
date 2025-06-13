@@ -1,3 +1,4 @@
+import 'package:financial_manager/data/enums/change_type.dart';
 import 'package:financial_manager/data/models/account/account_state_model.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 
@@ -9,7 +10,7 @@ abstract class AccountHistoryModel with _$AccountHistoryModel {
   const factory AccountHistoryModel({
     required int id,
     required int accountId,
-    required String changeType,
+    required ChangeType changeType,
     AccountStateModel? previousState,
     required AccountStateModel newState,
     required String changeTimestamp,
