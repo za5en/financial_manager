@@ -21,16 +21,16 @@ class _FNavbarState extends State<FNavbar> {
   List<String> routes = ['/', '/income', '/account', '/items', '/settings'];
 
   void _destinationSelect(int index) {
-    // if (currentPageIndex != index) {
-    //   if (ModalRoute.of(context)?.settings.name != '/') {
-    //     if (routes[index] == '/') {
-    //       Navigator.popUntil(context, ModalRoute.withName('/'));
-    //     }
-    //     Navigator.pushReplacementNamed(context, routes[index]);
-    //   } else {
-    //     Navigator.pushNamed(context, routes[index]);
-    //   }
-    // }
+    if (currentPageIndex != index) {
+      if (ModalRoute.of(context)?.settings.name != '/') {
+        if (routes[index] == '/') {
+          Navigator.popUntil(context, ModalRoute.withName('/'));
+        }
+        Navigator.pushReplacementNamed(context, routes[index]);
+      } else {
+        Navigator.pushNamed(context, routes[index]);
+      }
+    }
     setState(() {
       currentPageIndex = index;
     });
@@ -38,6 +38,8 @@ class _FNavbarState extends State<FNavbar> {
 
   @override
   Widget build(BuildContext context) {
+    var currentRoute = ModalRoute.of(context)?.settings.name;
+    currentPageIndex = routes.indexOf(currentRoute ?? '/');
     return NavigationBar(
       backgroundColor: Color.fromRGBO(243, 237, 247, 1),
       onDestinationSelected: _destinationSelect,
