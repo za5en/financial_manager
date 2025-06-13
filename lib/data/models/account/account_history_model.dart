@@ -10,7 +10,7 @@ abstract class AccountHistoryModel with _$AccountHistoryModel {
     required int id,
     required int accountId,
     required String changeType,
-    required AccountStateModel previousState,
+    AccountStateModel? previousState,
     required AccountStateModel newState,
     required String changeTimestamp,
     required String createdAt,
