@@ -1,15 +1,21 @@
 import 'dart:developer';
 
+import 'package:financial_manager/data/integration/api_client.dart';
+import 'package:financial_manager/data/methods/transaction_methods.dart';
 import 'package:financial_manager/data/models/account/account_brief_model.dart';
 import 'package:financial_manager/data/models/category/category_model.dart';
 import 'package:financial_manager/data/models/transaction/transaction_model.dart';
 import 'package:financial_manager/data/models/transaction/transaction_request_model.dart';
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:financial_manager/domain/repos/transaction_repo_domain.dart';
+import 'package:intl/intl.dart';
 
 class TransactionRepoData implements TransactionRepoDomain {
+  const TransactionRepoData();
+  static final transactionMethods = TransactionMethods(ApiClient.dio);
+
   // список транзакций
-  final List<TransactionModel> transactions = [
+  static final List<TransactionModel> transactions = [
     TransactionModel(
       id: 1,
       accountId: 1,
@@ -23,7 +29,7 @@ class TransactionRepoData implements TransactionRepoDomain {
   ];
 
   // список аккаунтов
-  final List<AccountBriefModel> accountBriefModel = [
+  static final List<AccountBriefModel> accountBriefModel = [
     AccountBriefModel(
       id: 1,
       name: "Основной счет",
@@ -33,7 +39,7 @@ class TransactionRepoData implements TransactionRepoDomain {
   ];
 
   // список категорий
-  final List<CategoryModel> categoryModel = [
+  static final List<CategoryModel> categoryModel = [
     CategoryModel(id: 1, name: "Зарплата", emoji: "💰", isIncome: true),
   ];
 
@@ -130,53 +136,62 @@ class TransactionRepoData implements TransactionRepoDomain {
     DateTime? endDate,
   ) async {
     try {
-      await Future.delayed(Duration(milliseconds: 200));
+      // if (!accountBriefModel.any((el) => el.id == accountId)) {
+      //   throw Exception();
+      // }
 
-      if (!accountBriefModel.any((el) => el.id == accountId)) {
-        throw Exception();
-      }
+      final startDateFormatted =
+          startDate != null ? DateFormat('yyyy-MM-dd').format(startDate) : null;
 
-      final List<TransactionModel> transactionsByPeriod =
-          transactions
-              .where(
-                (el) =>
-                    el.accountId == accountId &&
-                    DateTime.parse(
-                      el.transactionDate,
-                    ).isAfter(startDate ?? DateTime(DateTime.now().month)) &&
-                    DateTime.parse(
-                      el.transactionDate,
-                    ).isBefore(endDate ?? DateTime(DateTime.now().month + 1)),
-              )
-              .toList();
+      final endDateFormatted =
+          endDate != null ? DateFormat('yyyy-MM-dd').format(endDate) : null;
 
-      if (transactionsByPeriod.isEmpty) {
-        throw Exception();
-      }
+      final response = await transactionMethods.getTransactionsByPeriod(
+        accountId,
+        startDateFormatted,
+        endDateFormatted,
+      );
 
-      final response =
-          transactionsByPeriod.map((transaction) {
-            return TransactionResponseModel(
-              id: transaction.id,
-              account: accountBriefModel.firstWhere(
-                (el) => el.id == transaction.accountId,
-              ),
-              category: categoryModel.firstWhere(
-                (el) => el.id == transaction.categoryId,
-              ),
-              amount: transaction.amount,
-              transactionDate: transaction.transactionDate,
-              createdAt: transaction.createdAt,
-              updatedAt: transaction.updatedAt,
-            );
-          }).toList();
+      // final List<TransactionModel> transactionsByPeriod =
+      //     transactions
+      //         .where(
+      //           (el) =>
+      //               el.accountId == accountId &&
+      //               DateTime.parse(
+      //                 el.transactionDate,
+      //               ).isAfter(startDate ?? DateTime(DateTime.now().month)) &&
+      //               DateTime.parse(
+      //                 el.transactionDate,
+      //               ).isBefore(endDate ?? DateTime(DateTime.now().month + 1)),
+      //         )
+      //         .toList();
+
+      // if (transactionsByPeriod.isEmpty) {
+      //   throw Exception();
+      // }
+
+      // final response =
+      //     transactionsByPeriod.map((transaction) {
+      //       return TransactionResponseModel(
+      //         id: transaction.id,
+      //         account: accountBriefModel.firstWhere(
+      //           (el) => el.id == transaction.accountId,
+      //         ),
+      //         category: categoryModel.firstWhere(
+      //           (el) => el.id == transaction.categoryId,
+      //         ),
+      //         amount: transaction.amount,
+      //         transactionDate: transaction.transactionDate,
+      //         createdAt: transaction.createdAt,
+      //         updatedAt: transaction.updatedAt,
+      //       );
+      //     }).toList();
       return response;
     } catch (e) {
       log(e.toString());
       rethrow;
     }
   }
-  // DateFormat('yyyy-MM-dd').format(DateTime.now())
 
   // обновить транзакцию
   @override
