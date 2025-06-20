@@ -4,7 +4,7 @@ import 'package:financial_manager/data/models/account/account_model.dart';
 import 'package:financial_manager/data/models/account/account_response_model.dart';
 import 'package:financial_manager/data/models/account/account_update_request_model.dart';
 
-abstract class BankAccountRepoDomain {
+abstract interface class BankAccountRepoDomain {
   Future<List<AccountModel>> getAccount();
   Future<AccountModel> createAccount(
     AccountCreateRequestModel accountCreateModel,
