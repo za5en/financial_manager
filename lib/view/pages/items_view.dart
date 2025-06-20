@@ -1,5 +1,4 @@
 import 'package:financial_manager/view/widgets/f_appbar.dart';
-import 'package:financial_manager/view/widgets/f_navbar.dart';
 import 'package:flutter/material.dart';
 
 class ItemsView extends StatelessWidget {
@@ -10,7 +9,6 @@ class ItemsView extends StatelessWidget {
     return Scaffold(
       appBar: FAppbar(title: 'Мои статьи'),
       body: Center(child: Text('Financial Manager')),
-      bottomNavigationBar: FNavbar(),
     );
   }
 }
