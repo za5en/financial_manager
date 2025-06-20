@@ -2,7 +2,13 @@ import 'package:financial_manager/view/widgets/f_svg.dart';
 import 'package:flutter/material.dart';
 
 class FNavbar extends StatefulWidget {
-  const FNavbar({super.key});
+  const FNavbar({
+    super.key,
+    required this.currentIndex,
+    required this.destinationSelect,
+  });
+  final int currentIndex;
+  final Function(int index) destinationSelect;
 
   @override
   State<FNavbar> createState() => _FNavbarState();
@@ -20,21 +26,21 @@ class _FNavbarState extends State<FNavbar> {
 
   List<String> routes = ['/', '/income', '/account', '/items', '/settings'];
 
-  void _destinationSelect(int index) {
-    if (currentPageIndex != index) {
-      if (ModalRoute.of(context)?.settings.name != '/') {
-        if (routes[index] == '/') {
-          Navigator.popUntil(context, ModalRoute.withName('/'));
-        }
-        Navigator.pushReplacementNamed(context, routes[index]);
-      } else {
-        Navigator.pushNamed(context, routes[index]);
-      }
-    }
-    setState(() {
-      currentPageIndex = index;
-    });
-  }
+  // void _destinationSelect(int index) {
+  //   if (currentPageIndex != index) {
+  //     if (ModalRoute.of(context)?.settings.name != '/') {
+  //       if (routes[index] == '/') {
+  //         Navigator.popUntil(context, ModalRoute.withName('/'));
+  //       }
+  //       Navigator.pushReplacementNamed(context, routes[index]);
+  //     } else {
+  //       Navigator.pushNamed(context, routes[index]);
+  //     }
+  //   }
+  //   setState(() {
+  //     currentPageIndex = index;
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +48,9 @@ class _FNavbarState extends State<FNavbar> {
     currentPageIndex = routes.indexOf(currentRoute ?? '/');
     return NavigationBar(
       backgroundColor: Color.fromRGBO(243, 237, 247, 1),
-      onDestinationSelected: _destinationSelect,
+      onDestinationSelected: widget.destinationSelect,
       indicatorColor: Color.fromRGBO(212, 250, 230, 1),
-      selectedIndex: currentPageIndex,
+      selectedIndex: widget.currentIndex,
       destinations: <Widget>[
         NavigationDestination(
           icon: FSvg(assetName: icons.values.elementAt(0)),
