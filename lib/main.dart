@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:financial_manager/view/pages/home_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:intl/intl_standalone.dart';
@@ -35,6 +36,10 @@ class _FMAppState extends State<FMApp> {
     return StreamBuilder<Object>(
       stream: themeColor.stream,
       builder: (context, snapshot) {
+        SystemChrome.setPreferredOrientations([
+          DeviceOrientation.portraitUp,
+          DeviceOrientation.portraitDown,
+        ]);
         return MaterialApp(
           onGenerateRoute: (settings) {
             return MaterialPageRoute(builder: (context) => HomePage());
@@ -42,7 +47,11 @@ class _FMAppState extends State<FMApp> {
           debugShowCheckedModeBanner: false,
           initialRoute: initialRoute,
           theme: theme.light,
-          localizationsDelegates: [GlobalMaterialLocalizations.delegate],
+          localizationsDelegates: [
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
           supportedLocales: [const Locale('en'), const Locale('ru')],
         );
       },
