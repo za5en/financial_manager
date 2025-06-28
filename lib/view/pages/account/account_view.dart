@@ -249,13 +249,6 @@ class _AccountViewState extends State<AccountView> {
                                             _currencies[index][0] == 'Отмена'
                                                 ? Colors.white
                                                 : null,
-                                        svgIcon:
-                                            _currencies[index][0] != 'Отмена'
-                                                ? FSvg(
-                                                  assetName:
-                                                      'assets/images/euro.svg',
-                                                )
-                                                : null,
                                         icon: Icon(
                                           _currencies[index][1] as IconData,
                                           color:
