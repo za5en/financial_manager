@@ -1,7 +1,7 @@
-import 'package:financial_manager/view/pages/account_view.dart';
-import 'package:financial_manager/view/pages/finances_view.dart';
-import 'package:financial_manager/view/pages/items_view.dart';
-import 'package:financial_manager/view/pages/settings_view.dart';
+import 'package:financial_manager/view/pages/account/account_view.dart';
+import 'package:financial_manager/view/pages/history/finances_view.dart';
+import 'package:financial_manager/view/pages/items/items_view.dart';
+import 'package:financial_manager/view/pages/settings/settings_view.dart';
 import 'package:financial_manager/view/widgets/f_navbar.dart';
 import 'package:flutter/material.dart';
 
