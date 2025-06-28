@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
 
 class FAppbar extends StatefulWidget implements PreferredSizeWidget {
-  const FAppbar({super.key, required this.title, this.actions, this.leading});
+  const FAppbar({
+    super.key,
+    required this.title,
+    this.actions,
+    this.leading,
+    this.backgroundColor,
+  });
   final String title;
   final List<Widget>? actions;
   final Widget? leading;
+  final Color? backgroundColor;
 
   @override
   State<FAppbar> createState() => _FAppbarState();
@@ -22,7 +29,8 @@ class _FAppbarState extends State<FAppbar> {
           children: [
             AppBar(
               centerTitle: true,
-              backgroundColor: Color.fromRGBO(42, 232, 129, 1),
+              backgroundColor:
+                  widget.backgroundColor ?? Color.fromRGBO(42, 232, 129, 1),
               leading: widget.leading,
               actions: widget.actions,
               title: Text(widget.title, style: TextStyle(fontSize: 22)),
