@@ -4,9 +4,9 @@ import 'package:financial_manager/data/models/transaction/transaction_response_m
 import 'package:financial_manager/data/repos/transaction_repo_data.dart';
 
 class TransactionLink {
-  const TransactionLink();
+  TransactionLink();
 
-  final transactionRepoData = const TransactionRepoData();
+  final transactionRepoData = TransactionRepoData();
 
   Future<List<TransactionResponseModel>> makeRequest(
     accountId,

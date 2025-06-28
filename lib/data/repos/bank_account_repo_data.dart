@@ -1,5 +1,6 @@
 import 'dart:developer';
 
+import 'package:financial_manager/data/database/drift_database.dart' as sql;
 import 'package:financial_manager/data/enums/change_type.dart';
 import 'package:financial_manager/data/models/account/account_create_request_model.dart';
 import 'package:financial_manager/data/models/account/account_history_model.dart';
@@ -13,6 +14,9 @@ import 'package:financial_manager/domain/repos/bank_account_repo_domain.dart';
 
 class BankAccountRepoData implements BankAccountRepoDomain {
   final int userId = 1;
+
+  static final sql.AppDatabase _sqlDatabase = sql.AppDatabase();
+
   // список счетов
   final List<AccountModel> accounts = [
     AccountModel(
@@ -91,14 +95,25 @@ class BankAccountRepoData implements BankAccountRepoDomain {
   ) async {
     try {
       await Future.delayed(Duration(milliseconds: 200));
+
+      final newAccount = await _sqlDatabase.createAccount(
+        userId,
+        accountCreateModel.name,
+        accountCreateModel.balance,
+        accountCreateModel.currency,
+        DateTime.now().toString(),
+        DateTime.now().toString(),
+        ChangeType.creation.toString(),
+      );
+
       final newAccountData = AccountModel(
-        id: accounts.length + 1,
-        userId: userId,
-        name: accountCreateModel.name,
-        balance: accountCreateModel.balance,
-        currency: accountCreateModel.currency,
-        createdAt: DateTime.now().toString(),
-        updatedAt: DateTime.now().toString(),
+        id: newAccount.id,
+        userId: newAccount.userId,
+        name: newAccount.name,
+        balance: newAccount.balance,
+        currency: newAccount.currency,
+        createdAt: newAccount.createdAt,
+        updatedAt: newAccount.updatedAt,
       );
       accounts.add(newAccountData);
       return newAccountData;
@@ -113,6 +128,22 @@ class BankAccountRepoData implements BankAccountRepoDomain {
   Future<List<AccountModel>> getAccount() async {
     try {
       await Future.delayed(Duration(milliseconds: 200));
+      final res = await _sqlDatabase.getAccount();
+      List<AccountModel> accs = [];
+      for (var record in res) {
+        accs.add(
+          AccountModel(
+            id: record.id,
+            userId: record.userId,
+            name: record.name,
+            balance: record.balance,
+            currency: record.currency,
+            createdAt: record.createdAt,
+            updatedAt: record.updatedAt,
+          ),
+        );
+      }
+
       return accounts;
     } catch (e) {
       log(e.toString());
@@ -129,6 +160,30 @@ class BankAccountRepoData implements BankAccountRepoDomain {
         throw Exception();
       }
       final account = accounts.firstWhere((el) => el.id == id);
+
+      final res = await _sqlDatabase.getAccountById(id);
+      final stats = await _sqlDatabase.getStatItems();
+      List<StatItemModel> getStats = [];
+      for (var stat in stats) {
+        getStats.add(
+          StatItemModel(
+            categoryId: stat.categoryId,
+            categoryName: stat.categoryName,
+            emoji: stat.emoji,
+            amount: stat.amount,
+          ),
+        );
+      }
+      final acc = AccountResponseModel(
+        id: res.id,
+        name: res.name,
+        balance: res.balance,
+        currency: res.currency,
+        incomeStats: getStats,
+        expenseStats: getStats,
+        createdAt: res.createdAt,
+        updatedAt: res.updatedAt,
+      );
 
       final response = AccountResponseModel(
         id: account.id,
@@ -158,6 +213,15 @@ class BankAccountRepoData implements BankAccountRepoDomain {
       final account = accounts.firstWhere((el) => el.id == id);
       final accountHistory =
           history.where((el) => el.accountId == account.id).toList();
+
+      final res = await _sqlDatabase.getAccountHistory(id);
+      final acc = AccountHistoryResponseModel(
+        accountId: res.id,
+        accountName: res.name,
+        currency: res.currency,
+        currentBalance: res.balance,
+        history: history, // пока не особо понимаю как реализовать историю в бд
+      );
 
       final response = AccountHistoryResponseModel(
         accountId: account.id,
@@ -202,11 +266,37 @@ class BankAccountRepoData implements BankAccountRepoDomain {
       if (index == -1) {
         throw Exception();
       }
-      final account = accounts[index].copyWith(
-        name: accountUpdateModel.name,
-        balance: accountUpdateModel.balance,
-        currency: accountUpdateModel.currency,
+
+      final accountModel = await _sqlDatabase.updateAccount(
+        id,
+        userId,
+        accountUpdateModel.name,
+        accountUpdateModel.balance,
+        accountUpdateModel.currency,
+        DateTime.now().toString(),
+        DateTime.now().toString(),
+        ChangeType.modification.toString(),
       );
+      final acc = AccountModel(
+        id: accountModel.id,
+        userId: accountModel.userId,
+        name: accountModel.name,
+        balance: accountModel.balance,
+        currency: accountModel.currency,
+        createdAt: accountModel.createdAt,
+        updatedAt: accountModel.updatedAt,
+      );
+
+      final account = AccountModel(
+        id: accountModel.id,
+        userId: accountModel.userId,
+        name: accountModel.name,
+        balance: accountModel.balance,
+        currency: accountModel.currency,
+        createdAt: accountModel.createdAt,
+        updatedAt: accountModel.updatedAt,
+      );
+
       accounts[index] = account;
       return account;
     } catch (e) {

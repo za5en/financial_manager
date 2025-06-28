@@ -9,10 +9,22 @@ import 'package:financial_manager/data/models/transaction/transaction_request_mo
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:financial_manager/domain/repos/transaction_repo_domain.dart';
 import 'package:intl/intl.dart';
+import '../database/drift_database.dart' as sql;
 
 class TransactionRepoData implements TransactionRepoDomain {
-  const TransactionRepoData();
+  TransactionRepoData();
   static final transactionMethods = TransactionMethods(ApiClient.dio);
+  static final sql.AppDatabase _sqlDatabase = sql.AppDatabase();
+
+  // Future<void> initialize() async {
+  //   _sqlDatabase =
+  // }
+
+  static final Map<String, String> currencies = {
+    'RUB': '₽',
+    'USD': '\$',
+    'EUR': '€',
+  };
 
   // список транзакций
   static final List<TransactionModel> transactions = [
@@ -59,6 +71,15 @@ class TransactionRepoData implements TransactionRepoDomain {
         throw Exception();
       }
 
+      final res = await _sqlDatabase.createTransaction(
+        transactionRequest.accountId,
+        transactionRequest.categoryId,
+        transactionRequest.amount,
+        DateTime.now(),
+        DateTime.now().toString(),
+        DateTime.now().toString(),
+      );
+
       TransactionModel newTransactionData = TransactionModel(
         id: transactions.length + 1,
         accountId: transactionRequest.accountId,
@@ -84,6 +105,9 @@ class TransactionRepoData implements TransactionRepoDomain {
       if (!transactions.any((el) => el.id == id)) {
         throw Exception();
       }
+
+      await _sqlDatabase.deleteTransaction(id);
+
       transactions.removeWhere((el) => el.id == id);
     } catch (e) {
       log(e.toString());
@@ -107,6 +131,30 @@ class TransactionRepoData implements TransactionRepoDomain {
       if (!categoryModel.any((el) => el.id == transaction.categoryId)) {
         throw Exception();
       }
+
+      final res = await _sqlDatabase.getTransactionById(id);
+      final acc = await _sqlDatabase.getAccountById(res.accountId);
+      final cat = await _sqlDatabase.getCategoryById(res.categoryId);
+
+      final getTransaction = TransactionResponseModel(
+        id: res.id,
+        account: AccountBriefModel(
+          id: acc.id,
+          name: acc.name,
+          balance: acc.balance,
+          currency: acc.currency,
+        ),
+        category: CategoryModel(
+          id: cat.id,
+          name: cat.name,
+          emoji: cat.emoji,
+          isIncome: cat.isIncome,
+        ),
+        amount: res.amount,
+        transactionDate: res.transactionDate.toString(),
+        createdAt: res.createdAt,
+        updatedAt: res.updatedAt,
+      );
 
       TransactionResponseModel response = TransactionResponseModel(
         id: transaction.id,
@@ -140,6 +188,39 @@ class TransactionRepoData implements TransactionRepoDomain {
       //   throw Exception();
       // }
 
+      final res = await _sqlDatabase.getTransactionsByPeriod(
+        accountId: accountId,
+        startDate: startDate,
+        endDate: endDate,
+      );
+
+      List<TransactionResponseModel> getTransactions = [];
+      for (var record in res) {
+        final acc = await _sqlDatabase.getAccountById(record.accountId);
+        final cat = await _sqlDatabase.getCategoryById(record.categoryId);
+        getTransactions.add(
+          TransactionResponseModel(
+            id: record.id,
+            account: AccountBriefModel(
+              id: acc.id,
+              name: acc.name,
+              balance: acc.balance,
+              currency: acc.currency,
+            ),
+            category: CategoryModel(
+              id: cat.id,
+              name: cat.name,
+              emoji: cat.emoji,
+              isIncome: cat.isIncome,
+            ),
+            amount: record.amount,
+            transactionDate: record.transactionDate.toString(),
+            createdAt: record.createdAt,
+            updatedAt: record.updatedAt,
+          ),
+        );
+      }
+
       final startDateFormatted =
           startDate != null ? DateFormat('yyyy-MM-dd').format(startDate) : null;
 
@@ -151,6 +232,17 @@ class TransactionRepoData implements TransactionRepoDomain {
         startDateFormatted,
         endDateFormatted,
       );
+
+      final List<TransactionResponseModel> responseUpgraded = [];
+      for (var record in response) {
+        responseUpgraded.add(
+          record.copyWith(
+            account: record.account.copyWith(
+              currency: currencies[record.account.currency] ?? '₽',
+            ),
+          ),
+        );
+      }
 
       // final List<TransactionModel> transactionsByPeriod =
       //     transactions
@@ -186,7 +278,7 @@ class TransactionRepoData implements TransactionRepoDomain {
       //         updatedAt: transaction.updatedAt,
       //       );
       //     }).toList();
-      return response;
+      return responseUpgraded;
     } catch (e) {
       log(e.toString());
       rethrow;
@@ -212,6 +304,16 @@ class TransactionRepoData implements TransactionRepoDomain {
       if (!categoryModel.any((el) => el.id == transactionRequest.categoryId)) {
         throw Exception();
       }
+
+      final res = await _sqlDatabase.updateTransaction(
+        id,
+        transactionRequest.accountId,
+        transactionRequest.categoryId,
+        transactionRequest.amount,
+        DateTime.now(),
+        DateTime.now().toString(),
+        DateTime.now().toString(),
+      );
 
       final index = transactions.indexWhere((el) => el.id == id);
       final transaction = transactions[index].copyWith(
