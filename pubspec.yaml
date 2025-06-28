@@ -8,30 +8,37 @@ environment:
 
 dependencies:
   dio: ^5.8.0+1
+  drift: ^2.27.0
+  drift_flutter: ^0.2.4
   flutter:
     sdk: flutter
+  flutter_bloc: ^9.1.1
   flutter_dotenv: ^5.2.1
-  flutter_hooks: ^0.21.2
   flutter_localizations:
     sdk: flutter
   flutter_svg: ^2.1.0
   freezed_annotation: ^3.0.0
-  hooks_riverpod: ^2.6.1
+  fuzzy: ^0.5.1
   http: ^1.4.0
   intl: ^0.19.0
   json_annotation: ^4.9.0
+  path_provider: ^2.1.5
   retrofit: ^4.4.2
   retrofit_generator: ^9.2.0
+  sensors_plus: ^6.1.1
+  shake: ^3.0.0
+  spoiler_widget: ^1.0.12
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^5.0.0
   json_serializable: ^6.9.5
-  build_runner: ^2.4.15
+  build_runner: ^2.5.4
   freezed: ^3.0.6
   custom_lint: ^0.7.5
   riverpod_lint: ^2.6.5
+  drift_dev: ^2.27.0
 
 flutter_localizations:
   sdk: flutter
