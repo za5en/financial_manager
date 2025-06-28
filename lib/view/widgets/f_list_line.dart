@@ -1,6 +1,7 @@
+import 'package:financial_manager/view/widgets/f_svg.dart';
 import 'package:flutter/material.dart';
 
-class FListLine extends StatelessWidget {
+class FListLine extends StatefulWidget {
   const FListLine({
     super.key,
     required this.height,
@@ -11,28 +12,58 @@ class FListLine extends StatelessWidget {
     required this.rightSide,
     this.emoji,
     required this.backgroundColor,
+    this.bottomBorderColor,
+    this.emojiBackground,
+    this.emojiTextStyle,
+    this.icon,
+    this.nameColor,
+    required this.isEmojiInContainer,
+    this.svgIcon,
+    this.editName,
+    this.onNameChanged,
+    this.controller,
   });
   final double height;
   final double leftPadding;
   final double rightPadding;
   final String name;
+  final Color? nameColor;
   final String? description;
   final Widget rightSide;
+  final Icon? icon;
+  final FSvg? svgIcon;
   final String? emoji;
+  final Color? emojiBackground;
+  final bool isEmojiInContainer;
+  final TextStyle? emojiTextStyle;
   final Color backgroundColor;
+  final Color? bottomBorderColor;
+  final bool? editName;
+  final void Function(String)? onNameChanged;
+  final TextEditingController? controller;
 
+  @override
+  State<FListLine> createState() => _FListLineState();
+}
+
+class _FListLineState extends State<FListLine> {
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
     return Container(
-      height: height,
-      padding: EdgeInsets.only(left: leftPadding, right: rightPadding),
+      height: widget.height,
+      padding: EdgeInsets.only(
+        left: widget.leftPadding,
+        right: widget.rightPadding,
+      ),
       decoration: BoxDecoration(
         border: Border(
-          bottom: BorderSide(color: Color.fromRGBO(202, 196, 208, 1)),
+          bottom: BorderSide(
+            color: widget.bottomBorderColor ?? Color.fromRGBO(202, 196, 208, 1),
+          ),
         ),
-        color: backgroundColor,
+        color: widget.backgroundColor,
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -41,29 +72,50 @@ class FListLine extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(right: w * 0.038),
-                child: Visibility(
-                  visible: emoji != null,
-                  child: Container(
-                    height: h * 0.026,
-                    width: w * 0.058,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(15),
-                      color: Color.fromRGBO(212, 250, 230, 1),
+                child: Row(
+                  children: [
+                    Visibility(
+                      visible: widget.emoji != null,
+                      child:
+                          widget.isEmojiInContainer
+                              ? Container(
+                                height: h * 0.026,
+                                width: w * 0.058,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(15),
+                                  color:
+                                      widget.emojiBackground ??
+                                      Color.fromRGBO(212, 250, 230, 1),
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    widget.emoji ?? '',
+                                    style: widget.emojiTextStyle,
+                                  ),
+                                ),
+                              )
+                              : Center(child: widget.svgIcon),
                     ),
-                    child: Text(emoji ?? ''),
-                  ),
+                    Visibility(
+                      visible: widget.icon != null,
+                      child: Center(child: widget.icon),
+                    ),
+                  ],
                 ),
               ),
-              description != null
+              widget.description != null
                   ? Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(name),
+                      Text(
+                        widget.name,
+                        style: TextStyle(color: widget.nameColor),
+                      ),
                       SizedBox(
                         width: w * 0.4,
                         child: Text(
-                          description ?? '',
+                          widget.description ?? '',
                           style: TextStyle(
                             color: Color.fromRGBO(73, 69, 79, 1),
                             fontSize: 12,
@@ -74,10 +126,37 @@ class FListLine extends StatelessWidget {
                       ),
                     ],
                   )
-                  : Text(name),
+                  : widget.editName == true
+                  ? SizedBox(
+                    width: w * 0.45,
+                    child: TextFormField(
+                      controller: widget.controller,
+                      autofocus: true,
+                      onTapOutside: (event) => FocusScope.of(context).unfocus(),
+                      onChanged: (value) => widget.onNameChanged!(value),
+                      maxLines: 1,
+                      style: TextStyle(fontSize: 14),
+                      textAlignVertical: TextAlignVertical.center,
+                      decoration: InputDecoration(
+                        enabledBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide.none,
+                        ),
+                        border: OutlineInputBorder(borderSide: BorderSide.none),
+                        hintText: widget.name,
+                        hintStyle: TextStyle(fontSize: 14),
+                      ),
+                    ),
+                  )
+                  : Text(
+                    widget.name,
+                    style: TextStyle(color: widget.nameColor),
+                  ),
             ],
           ),
-          rightSide,
+          widget.rightSide,
         ],
       ),
     );
