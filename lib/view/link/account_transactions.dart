@@ -2,9 +2,9 @@ import 'package:financial_manager/data/models/transaction/transaction_response_m
 import 'package:financial_manager/domain/link/transactions_link.dart';
 
 class AccountTransactions {
-  const AccountTransactions();
+  AccountTransactions();
 
-  final transactionLink = const TransactionLink();
+  final transactionLink = TransactionLink();
 
   Future<List<TransactionResponseModel>> getTransactionsByPeriod(
     accountId,

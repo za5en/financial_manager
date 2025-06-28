@@ -15,7 +15,7 @@ class FNavbar extends StatefulWidget {
 }
 
 class _FNavbarState extends State<FNavbar> {
-  int currentPageIndex = 0;
+  // int _currentPageIndex = 0;
   Map<String, String> icons = {
     'Расходы': 'assets/images/expenses.svg',
     'Доходы': 'assets/images/income.svg',
@@ -44,8 +44,8 @@ class _FNavbarState extends State<FNavbar> {
 
   @override
   Widget build(BuildContext context) {
-    var currentRoute = ModalRoute.of(context)?.settings.name;
-    currentPageIndex = routes.indexOf(currentRoute ?? '/');
+    // var currentRoute = ModalRoute.of(context)?.settings.name;
+    // _currentPageIndex = routes.indexOf(currentRoute ?? '/');
     return NavigationBar(
       backgroundColor: Color.fromRGBO(243, 237, 247, 1),
       onDestinationSelected: widget.destinationSelect,
