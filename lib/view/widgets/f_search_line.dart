@@ -11,6 +11,13 @@ class FSearchLine extends StatefulWidget {
 
 class _FSearchLineState extends State<FSearchLine> {
   final TextEditingController controller = TextEditingController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    controller.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
