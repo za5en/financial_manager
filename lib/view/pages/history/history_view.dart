@@ -1,6 +1,7 @@
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/pages/history/analysis_view.dart';
+import 'package:financial_manager/view/pages/history/manage_view.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
 import 'package:financial_manager/view/widgets/f_svg.dart';
@@ -91,7 +92,7 @@ class _HistoryViewState extends State<HistoryView> {
         1,
         isStart ? pickedDate : startDate,
         isStart ? endDate : pickedDate,
-        widget.isIncome,
+        isIncome: widget.isIncome,
       );
 
       countSum(response);
@@ -115,7 +116,7 @@ class _HistoryViewState extends State<HistoryView> {
       1,
       startDate,
       endDate,
-      widget.isIncome,
+      isIncome: widget.isIncome,
     );
 
     countSum(response);
@@ -269,6 +270,7 @@ class _HistoryViewState extends State<HistoryView> {
                 color: Colors.black,
               ),
               onChanged: updateSort,
+              alignment: Alignment.centerRight,
               underline: Container(height: 0),
               borderRadius: BorderRadius.circular(15),
             ),
@@ -298,39 +300,55 @@ class _HistoryViewState extends State<HistoryView> {
               shrinkWrap: true,
               itemCount: transactions.length,
               itemBuilder: (builder, index) {
-                return FListLine(
-                  height: h * 0.077,
-                  leftPadding: w * 0.04,
-                  rightPadding: w * 0.03,
-                  name: transactions[index].category.name,
-                  description: transactions[index].comment,
-                  emoji: transactions[index].category.emoji,
-                  isEmojiInContainer: true,
-                  rightSide: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: w * 0.035),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '${transactions[index].amount} ${transactions[index].account.currency}',
-                            ),
-                            Text(
-                              DateFormat('dd.MM.yyyy HH:mm').format(
-                                DateTime.parse(
-                                  transactions[index].transactionDate,
+                return InkWell(
+                  onTap: () {
+                    showDialog<void>(
+                      context: context,
+                      useRootNavigator: false,
+                      barrierColor: Color(0x00ffffff),
+                      builder: (BuildContext context) {
+                        return ManageView(
+                          isIncome: widget.isIncome,
+                          isEditMode: true,
+                          transactionId: transactions[index].id,
+                        );
+                      },
+                    );
+                  },
+                  child: FListLine(
+                    height: h * 0.077,
+                    leftPadding: w * 0.04,
+                    rightPadding: w * 0.03,
+                    name: transactions[index].category.name,
+                    description: transactions[index].comment,
+                    emoji: transactions[index].category.emoji,
+                    isEmojiInContainer: true,
+                    rightSide: Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(right: w * 0.035),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Text(
+                                '${transactions[index].amount} ${transactions[index].account.currency}',
+                              ),
+                              Text(
+                                DateFormat('dd.MM.yyyy HH:mm').format(
+                                  DateTime.parse(
+                                    transactions[index].transactionDate,
+                                  ),
                                 ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                      FSvg(assetName: 'assets/images/more.svg'),
-                    ],
+                        FSvg(assetName: 'assets/images/more.svg'),
+                      ],
+                    ),
+                    backgroundColor: Color.fromRGBO(254, 247, 255, 1),
                   ),
-                  backgroundColor: Color.fromRGBO(254, 247, 255, 1),
                 );
               },
             ),

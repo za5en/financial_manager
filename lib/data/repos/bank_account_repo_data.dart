@@ -2,6 +2,8 @@ import 'dart:developer';
 
 import 'package:financial_manager/data/database/drift_database.dart' as sql;
 import 'package:financial_manager/data/enums/change_type.dart';
+import 'package:financial_manager/data/integration/api_client.dart';
+import 'package:financial_manager/data/methods/account_methods.dart';
 import 'package:financial_manager/data/models/account/account_create_request_model.dart';
 import 'package:financial_manager/data/models/account/account_history_model.dart';
 import 'package:financial_manager/data/models/account/account_history_response_model.dart';
@@ -15,6 +17,7 @@ import 'package:financial_manager/domain/repos/bank_account_repo_domain.dart';
 class BankAccountRepoData implements BankAccountRepoDomain {
   final int userId = 1;
 
+  static final accountMethods = AccountMethods(ApiClient.dio);
   static final sql.AppDatabase _sqlDatabase = sql.AppDatabase();
 
   // список счетов
@@ -127,24 +130,26 @@ class BankAccountRepoData implements BankAccountRepoDomain {
   @override
   Future<List<AccountModel>> getAccount() async {
     try {
-      await Future.delayed(Duration(milliseconds: 200));
-      final res = await _sqlDatabase.getAccount();
-      List<AccountModel> accs = [];
-      for (var record in res) {
-        accs.add(
-          AccountModel(
-            id: record.id,
-            userId: record.userId,
-            name: record.name,
-            balance: record.balance,
-            currency: record.currency,
-            createdAt: record.createdAt,
-            updatedAt: record.updatedAt,
-          ),
-        );
-      }
+      // await Future.delayed(Duration(milliseconds: 200));
+      // final res = await _sqlDatabase.getAccount();
+      // List<AccountModel> accs = [];
+      // for (var record in res) {
+      //   accs.add(
+      //     AccountModel(
+      //       id: record.id,
+      //       userId: record.userId,
+      //       name: record.name,
+      //       balance: record.balance,
+      //       currency: record.currency,
+      //       createdAt: record.createdAt,
+      //       updatedAt: record.updatedAt,
+      //     ),
+      //   );
+      // }
 
-      return accounts;
+      final response = await accountMethods.getAccount();
+
+      return response;
     } catch (e) {
       log(e.toString());
       rethrow;
