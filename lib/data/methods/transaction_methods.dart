@@ -14,4 +14,7 @@ abstract class TransactionMethods {
     @Query('startDate') String? startDate,
     @Query('endDate') String? endDate,
   );
+
+  @GET('/transactions/{id}')
+  Future<TransactionResponseModel> getTransaction(@Path('id') int id);
 }
