@@ -1,13 +1,19 @@
 import 'dart:async';
+import 'dart:math';
 
+import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
+import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_floating_action_button.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
+import 'package:financial_manager/view/widgets/f_red_button.dart';
 import 'package:financial_manager/view/widgets/f_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shake/shake.dart';
 import 'package:spoiler_widget/spoiler_widget.dart';
+import 'package:fl_chart/fl_chart.dart';
 
 class AccountView extends StatefulWidget {
   const AccountView({super.key});
@@ -29,6 +35,10 @@ class _AccountViewState extends State<AccountView> {
   String tempName = '';
   bool showBalance = false;
   bool isDown = false;
+  DateTime? startDate;
+  DateTime? endDate;
+  List<TransactionResponseModel> transactions = [];
+  List<double> days = [];
 
   final TextEditingController controller = TextEditingController();
 
@@ -37,9 +47,46 @@ class _AccountViewState extends State<AccountView> {
   List<AccelerometerEvent> _accelerometerValues = [];
   late StreamSubscription<AccelerometerEvent> _accelerometerSubscription;
 
+  void getTransactions() async {
+    final accountTransactions = AccountTransactions();
+
+    final response = await accountTransactions.getTransactionsByPeriod(
+      1,
+      startDate,
+      endDate,
+    );
+
+    for (var transaction in response) {
+      int index =
+          daysBetween(
+            startDate ?? DateTime.now().subtract(Duration(days: 30)),
+            DateTime.parse(transaction.transactionDate),
+          ) -
+          1;
+      if (transaction.category.isIncome) {
+        days[index] += double.parse(transaction.amount);
+      } else {
+        days[index] -= double.parse(transaction.amount);
+      }
+    }
+
+    setState(() {
+      transactions = response;
+    });
+  }
+
+  int daysBetween(DateTime from, DateTime to) {
+    from = DateTime(from.year, from.month, from.day);
+    to = DateTime(to.year, to.month, to.day);
+    return (to.difference(from).inHours / 24).round();
+  }
+
   @override
   void initState() {
     super.initState();
+    for (var i = 0; i < 30; i++) {
+      days.add(0);
+    }
     detector = ShakeDetector.waitForStart(
       onPhoneShake: (ShakeEvent event) {
         setState(() {
@@ -63,6 +110,18 @@ class _AccountViewState extends State<AccountView> {
         }
       });
     });
+
+    var startDay = DateTime.now().copyWith(
+      hour: 0,
+      minute: 0,
+      second: 0,
+      millisecond: 0,
+      microsecond: 0,
+    );
+    startDate ??= startDay.subtract(Duration(days: 30));
+    endDate ??= startDay.add(Duration(days: 1)).subtract(Duration(seconds: 1));
+
+    getTransactions();
   }
 
   @override
@@ -70,6 +129,7 @@ class _AccountViewState extends State<AccountView> {
     super.dispose();
     _accelerometerSubscription.cancel();
     detector.stopListening();
+    controller.dispose();
   }
 
   @override
@@ -130,6 +190,7 @@ class _AccountViewState extends State<AccountView> {
               setState(() => tempName = text);
             },
             controller: controller,
+            autofocus: true,
             isEmojiInContainer: true,
             icon:
                 isEditing
@@ -288,35 +349,136 @@ class _AccountViewState extends State<AccountView> {
             ),
           ),
           Visibility(
-            visible: isEditing,
+            visible: !isEditing,
             child: Padding(
-              padding: EdgeInsets.only(top: h * 0.036),
+              padding: EdgeInsets.only(top: h * 0.04),
               child: SizedBox(
-                width: w * 0.92,
-                height: h * 0.044,
-                child: ElevatedButton(
-                  style: ButtonStyle(
-                    elevation: WidgetStateProperty.all<double>(0),
-                    backgroundColor: WidgetStateProperty.all<Color>(
-                      Color.fromRGBO(228, 105, 98, 1),
-                    ),
-                    foregroundColor: WidgetStateProperty.all<Color>(
-                      Colors.white,
-                    ),
+                height: h * 0.3,
+                width: w * 0.95,
+                child: BarChart(
+                  BarChartData(
+                    barTouchData: barTouchData,
+                    titlesData: titlesData,
+                    borderData: borderData,
+                    barGroups: barGroups,
+                    gridData: const FlGridData(show: false),
+                    alignment: BarChartAlignment.spaceAround,
+                    maxY: days.reduce(max),
                   ),
-                  onPressed: () {
-                    // setState(() {
-                    //   isEditing = !isEditing;
-                    // });
-                  },
-                  child: Text('Удалить счет'),
                 ),
               ),
             ),
           ),
+          Visibility(
+            visible: isEditing,
+            child: FRedButton(
+              onPressed: () {},
+              width: w * 0.92,
+              height: h * 0.044,
+              topPadding: h * 0.036,
+              name: 'Удалить счет',
+            ),
+          ),
         ],
       ),
-      floatingActionButton: FFloatingActionButton(),
+      floatingActionButton: FFloatingActionButton(onPressed: () {}),
     );
+  }
+
+  BarTouchData get barTouchData => BarTouchData(
+    enabled: true,
+    touchTooltipData: BarTouchTooltipData(
+      getTooltipColor: (group) => Colors.transparent,
+      tooltipPadding: EdgeInsets.zero,
+      tooltipMargin: 8,
+      getTooltipItem: (
+        BarChartGroupData group,
+        int groupIndex,
+        BarChartRodData rod,
+        int rodIndex,
+      ) {
+        return BarTooltipItem(
+          rod.toY == 1
+              ? '0 $currentCurrency'
+              : '${rod.toY.toStringAsFixed(2)} $currentCurrency',
+          const TextStyle(
+            color: Colors.black,
+            fontWeight: FontWeight.bold,
+            fontSize: 12,
+          ),
+        );
+      },
+    ),
+  );
+
+  Widget getTitles(double value, TitleMeta meta) {
+    final style = TextStyle(
+      color: Colors.black,
+      fontWeight: FontWeight.w400,
+      fontSize: 12,
+    );
+    String text;
+    switch (value.toInt()) {
+      case 1:
+        text = DateFormat(
+          'dd.MM',
+        ).format(startDate ?? DateTime.now().subtract(Duration(days: 30)));
+        break;
+      case 14:
+        text = DateFormat('dd.MM').format(
+          startDate?.add(Duration(days: 15)) ??
+              DateTime.now().subtract(Duration(days: 15)),
+        );
+        break;
+      case 28:
+        text = DateFormat('dd.MM').format(endDate ?? DateTime.now());
+        break;
+      default:
+        text = '';
+        break;
+    }
+    return SideTitleWidget(
+      meta: meta,
+      space: 4,
+      child: Text(text, style: style),
+    );
+  }
+
+  FlTitlesData get titlesData => FlTitlesData(
+    show: true,
+    bottomTitles: AxisTitles(
+      sideTitles: SideTitles(
+        showTitles: true,
+        reservedSize: 30,
+        getTitlesWidget: getTitles,
+      ),
+    ),
+    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    topTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+    rightTitles: const AxisTitles(sideTitles: SideTitles(showTitles: false)),
+  );
+
+  FlBorderData get borderData => FlBorderData(show: false);
+
+  List<BarChartGroupData> get barGroups {
+    return List.generate(days.length, (i) {
+      return BarChartGroupData(
+        x: i,
+        barRods: [
+          BarChartRodData(
+            toY:
+                days[i] == 0
+                    ? 1
+                    : days[i] < 0
+                    ? days[i] * -1
+                    : days[i],
+            color:
+                days[i] < 0
+                    ? Color.fromRGBO(255, 95, 0, 1)
+                    : Color.fromRGBO(42, 232, 129, 1),
+          ),
+        ],
+      );
+    });
   }
 }

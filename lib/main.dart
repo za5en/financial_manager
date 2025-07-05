@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:intl/intl_standalone.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'i18n/app_localizations.dart';
 
 import 'view/resources/color_themes.dart';
 
@@ -48,6 +49,7 @@ class _FMAppState extends State<FMApp> {
           initialRoute: initialRoute,
           theme: theme.light,
           localizationsDelegates: [
+            AppLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,

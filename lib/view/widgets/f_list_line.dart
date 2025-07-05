@@ -22,6 +22,9 @@ class FListLine extends StatefulWidget {
     this.editName,
     this.onNameChanged,
     this.controller,
+    this.hint,
+    this.autofocus,
+    this.width,
   });
   final double height;
   final double leftPadding;
@@ -41,6 +44,9 @@ class FListLine extends StatefulWidget {
   final bool? editName;
   final void Function(String)? onNameChanged;
   final TextEditingController? controller;
+  final String? hint;
+  final bool? autofocus;
+  final double? width;
 
   @override
   State<FListLine> createState() => _FListLineState();
@@ -128,16 +134,17 @@ class _FListLineState extends State<FListLine> {
                   )
                   : widget.editName == true
                   ? SizedBox(
-                    width: w * 0.45,
+                    width: widget.width ?? w * 0.45,
                     child: TextFormField(
                       controller: widget.controller,
-                      autofocus: true,
+                      autofocus: widget.autofocus ?? false,
                       onTapOutside: (event) => FocusScope.of(context).unfocus(),
                       onChanged: (value) => widget.onNameChanged!(value),
                       maxLines: 1,
                       style: TextStyle(fontSize: 14),
                       textAlignVertical: TextAlignVertical.center,
                       decoration: InputDecoration(
+                        contentPadding: EdgeInsets.all(0.0),
                         enabledBorder: OutlineInputBorder(
                           borderSide: BorderSide.none,
                         ),
@@ -145,7 +152,7 @@ class _FListLineState extends State<FListLine> {
                           borderSide: BorderSide.none,
                         ),
                         border: OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: widget.name,
+                        hintText: widget.hint ?? widget.name,
                         hintStyle: TextStyle(fontSize: 14),
                       ),
                     ),

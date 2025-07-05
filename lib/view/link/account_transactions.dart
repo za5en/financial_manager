@@ -9,17 +9,25 @@ class AccountTransactions {
   Future<List<TransactionResponseModel>> getTransactionsByPeriod(
     accountId,
     startDate,
-    endDate,
+    endDate, {
     isIncome,
-  ) async {
-    final request = await transactionLink.makeRequest(
+  }) async {
+    final request = await transactionLink.getTransactionsByPeriod(
       accountId,
       startDate,
       endDate,
     );
 
-    return isIncome
-        ? request.where((val) => val.category.isIncome).toList()
-        : request.where((val) => !val.category.isIncome).toList();
+    return isIncome != null
+        ? isIncome
+            ? request.where((val) => val.category.isIncome).toList()
+            : request.where((val) => !val.category.isIncome).toList()
+        : request;
+  }
+
+  Future<TransactionResponseModel> getTransaction(id) async {
+    final request = await transactionLink.getTransaction(id);
+
+    return request;
   }
 }

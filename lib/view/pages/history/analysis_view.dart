@@ -5,6 +5,7 @@ import 'package:financial_manager/view/pages/history/category_view.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
 import 'package:financial_manager/view/widgets/f_svg.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -23,6 +24,14 @@ class _AnalysisViewState extends State<AnalysisView> {
   List<TransactionResponseModel> transactions = [];
   List<CategoryModel> categories = [];
   Map<int, double> categoriesSum = {};
+  int touchedIndex = -1;
+
+  List<Color> colors = [
+    Color.fromRGBO(252, 227, 0, 1),
+    Color.fromRGBO(255, 95, 0, 1),
+    Color.fromRGBO(42, 232, 129, 1),
+    Color.fromRGBO(228, 105, 98, 1),
+  ];
 
   Future<void> _selectDate(bool isStart) async {
     DateTime? pickedDate = await showDatePicker(
@@ -86,7 +95,7 @@ class _AnalysisViewState extends State<AnalysisView> {
         1,
         isStart ? pickedDate : startDate,
         isStart ? endDate : pickedDate,
-        widget.isIncome,
+        isIncome: widget.isIncome,
       );
 
       countSum(response);
@@ -120,7 +129,7 @@ class _AnalysisViewState extends State<AnalysisView> {
       1,
       startDate,
       endDate,
-      widget.isIncome,
+      isIncome: widget.isIncome,
     );
 
     countSum(response);
@@ -146,6 +155,13 @@ class _AnalysisViewState extends State<AnalysisView> {
       }
     }
     categories = newCategories.toList();
+    categories.sort(
+      (b, a) => categoriesSum[a.id]!.compareTo(categoriesSum[b.id]!),
+    );
+  }
+
+  String cutText(String str) {
+    return '${str.substring(0, 10)}...';
   }
 
   @override
@@ -249,6 +265,82 @@ class _AnalysisViewState extends State<AnalysisView> {
             backgroundColor: Color.fromRGBO(254, 247, 255, 1),
             isEmojiInContainer: true,
           ),
+          SizedBox(
+            height: h * 0.3,
+            child: Stack(
+              children: [
+                PieChart(
+                  PieChartData(
+                    pieTouchData: PieTouchData(
+                      touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                        setState(() {
+                          if (!event.isInterestedForInteractions ||
+                              pieTouchResponse == null ||
+                              pieTouchResponse.touchedSection == null) {
+                            touchedIndex = -1;
+                            return;
+                          }
+                          touchedIndex =
+                              pieTouchResponse
+                                  .touchedSection!
+                                  .touchedSectionIndex;
+                        });
+                      },
+                    ),
+                    borderData: FlBorderData(show: false),
+                    sectionsSpace: 0,
+                    centerSpaceRadius: 100,
+                    sections: showingSections(),
+                  ),
+                ),
+                Center(
+                  child: SizedBox(
+                    height: h * 0.15,
+                    width: w * 0.3,
+                    child: ListView.builder(
+                      itemCount: categories.length,
+                      shrinkWrap: true,
+                      itemBuilder: (builder, index) {
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            top: h * 0.001,
+                            bottom: h * 0.001,
+                          ),
+                          child: InkWell(
+                            onTap: () {
+                              setState(() {
+                                touchedIndex = index;
+                              });
+                            },
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 12,
+                                  height: 12,
+                                  decoration: BoxDecoration(
+                                    color: colors[index % 4],
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(left: w * 0.005),
+                                  child: Text(
+                                    '${((categoriesSum[categories[index].id] ?? 1) / sum * 100).toStringAsFixed(2)}% ${categories[index].name.length > 12 ? cutText(categories[index].name) : categories[index].name}',
+                                    style: TextStyle(fontSize: 11),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
           Expanded(
             child: ListView.builder(
               shrinkWrap: true,
@@ -312,7 +404,7 @@ class _AnalysisViewState extends State<AnalysisView> {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               Text(
-                                '${((categoriesSum[categories[index].id] ?? 1) / sum * 100).toStringAsFixed(4)} %',
+                                '${((categoriesSum[categories[index].id] ?? 1) / sum * 100).toStringAsFixed(4)}%',
                               ),
                               Text(
                                 '${categoriesSum[categories[index].id]} ${transactions[0].account.currency}',
@@ -332,5 +424,42 @@ class _AnalysisViewState extends State<AnalysisView> {
         ],
       ),
     );
+  }
+
+  List<PieChartSectionData> showingSections() {
+    return List.generate(categories.length, (i) {
+      final isTouched = i == touchedIndex;
+      final fontSize = isTouched ? 25.0 : 16.0;
+      final radius = isTouched ? 20.0 : 15.0;
+      const shadows = [Shadow(color: Colors.black, blurRadius: 2)];
+      return PieChartSectionData(
+        color: colors[i % 4],
+        value: (categoriesSum[categories[i].id] ?? 1) / sum * 100,
+        title: '',
+        radius: radius,
+        titleStyle: TextStyle(
+          fontSize: fontSize,
+          fontWeight: FontWeight.bold,
+          color: Colors.black,
+          shadows: shadows,
+        ),
+        badgeWidget:
+            isTouched
+                ? Container(
+                  width: MediaQuery.of(context).size.width * 0.25,
+                  padding: EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: colors[i % 4],
+                    borderRadius: BorderRadius.circular(35),
+                  ),
+                  child: Text(
+                    '${((categoriesSum[categories[i].id] ?? 1) / sum * 100).toStringAsFixed(2)}%\n${categories[i].name}',
+                    textAlign: TextAlign.center,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                )
+                : null,
+      );
+    });
   }
 }

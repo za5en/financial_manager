@@ -1,6 +1,7 @@
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/pages/history/history_view.dart';
+import 'package:financial_manager/view/pages/history/manage_view.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_floating_action_button.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
@@ -45,7 +46,7 @@ class _FinancesViewState extends State<FinancesView> {
         millisecond: 0,
         microsecond: 0,
       ),
-      widget.isIncome,
+      isIncome: widget.isIncome,
     );
 
     countSum(response);
@@ -130,36 +131,63 @@ class _FinancesViewState extends State<FinancesView> {
               shrinkWrap: true,
               itemCount: transactions.length,
               itemBuilder: (builder, index) {
-                return FListLine(
-                  height: h * 0.077,
-                  leftPadding: w * 0.04,
-                  rightPadding: w * 0.03,
-                  name: transactions[index].category.name,
-                  description: transactions[index].comment,
-                  isEmojiInContainer: true,
-                  emoji:
-                      widget.isIncome
-                          ? transactions[index].category.emoji
-                          : null,
-                  rightSide: Row(
-                    children: [
-                      Padding(
-                        padding: EdgeInsets.only(right: w * 0.035),
-                        child: Text(
-                          '${transactions[index].amount} ${transactions[index].account.currency}',
+                return InkWell(
+                  onTap: () {
+                    showDialog<void>(
+                      context: context,
+                      useRootNavigator: false,
+                      barrierColor: Color(0x00ffffff),
+                      builder: (BuildContext context) {
+                        return ManageView(
+                          isIncome: widget.isIncome,
+                          isEditMode: true,
+                          transactionId: transactions[index].id,
+                        );
+                      },
+                    );
+                  },
+                  child: FListLine(
+                    height: h * 0.077,
+                    leftPadding: w * 0.04,
+                    rightPadding: w * 0.03,
+                    name: transactions[index].category.name,
+                    description: transactions[index].comment,
+                    isEmojiInContainer: true,
+                    emoji:
+                        widget.isIncome
+                            ? transactions[index].category.emoji
+                            : null,
+                    rightSide: Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(right: w * 0.035),
+                          child: Text(
+                            '${transactions[index].amount} ${transactions[index].account.currency}',
+                          ),
                         ),
-                      ),
-                      FSvg(assetName: 'assets/images/more.svg'),
-                    ],
+                        FSvg(assetName: 'assets/images/more.svg'),
+                      ],
+                    ),
+                    backgroundColor: Color.fromRGBO(254, 247, 255, 1),
                   ),
-                  backgroundColor: Color.fromRGBO(254, 247, 255, 1),
                 );
               },
             ),
           ),
         ],
       ),
-      floatingActionButton: FFloatingActionButton(),
+      floatingActionButton: FFloatingActionButton(
+        onPressed: () {
+          showDialog<void>(
+            context: context,
+            useRootNavigator: false,
+            barrierColor: Color(0x00ffffff),
+            builder: (BuildContext context) {
+              return ManageView(isIncome: widget.isIncome, isEditMode: false);
+            },
+          );
+        },
+      ),
     );
   }
 }

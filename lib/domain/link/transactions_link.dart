@@ -8,7 +8,7 @@ class TransactionLink {
 
   final transactionRepoData = TransactionRepoData();
 
-  Future<List<TransactionResponseModel>> makeRequest(
+  Future<List<TransactionResponseModel>> getTransactionsByPeriod(
     accountId,
     startDate,
     endDate,
@@ -19,6 +19,16 @@ class TransactionLink {
         startDate,
         endDate,
       );
+      return request;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
+  }
+
+  Future<TransactionResponseModel> getTransaction(id) async {
+    try {
+      final request = await transactionRepoData.getTransactionById(id);
       return request;
     } catch (e) {
       log(e.toString());

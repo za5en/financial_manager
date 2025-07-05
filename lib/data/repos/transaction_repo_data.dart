@@ -118,58 +118,64 @@ class TransactionRepoData implements TransactionRepoDomain {
   @override
   Future<TransactionResponseModel> getTransactionById(int id) async {
     try {
-      await Future.delayed(Duration(milliseconds: 200));
-      if (!transactions.any((el) => el.id == id)) {
-        throw Exception();
-      }
+      // await Future.delayed(Duration(milliseconds: 200));
+      // if (!transactions.any((el) => el.id == id)) {
+      //   throw Exception();
+      // }
 
-      final transaction = transactions.firstWhere((el) => el.id == id);
+      // final transaction = transactions.firstWhere((el) => el.id == id);
 
-      if (!accountBriefModel.any((el) => el.id == transaction.accountId)) {
-        throw Exception();
-      }
-      if (!categoryModel.any((el) => el.id == transaction.categoryId)) {
-        throw Exception();
-      }
+      // if (!accountBriefModel.any((el) => el.id == transaction.accountId)) {
+      //   throw Exception();
+      // }
+      // if (!categoryModel.any((el) => el.id == transaction.categoryId)) {
+      //   throw Exception();
+      // }
 
-      final res = await _sqlDatabase.getTransactionById(id);
-      final acc = await _sqlDatabase.getAccountById(res.accountId);
-      final cat = await _sqlDatabase.getCategoryById(res.categoryId);
+      // final res = await _sqlDatabase.getTransactionById(id);
+      // final acc = await _sqlDatabase.getAccountById(res.accountId);
+      // final cat = await _sqlDatabase.getCategoryById(res.categoryId);
 
-      final getTransaction = TransactionResponseModel(
-        id: res.id,
-        account: AccountBriefModel(
-          id: acc.id,
-          name: acc.name,
-          balance: acc.balance,
-          currency: acc.currency,
+      // final getTransaction = TransactionResponseModel(
+      //   id: res.id,
+      //   account: AccountBriefModel(
+      //     id: acc.id,
+      //     name: acc.name,
+      //     balance: acc.balance,
+      //     currency: acc.currency,
+      //   ),
+      //   category: CategoryModel(
+      //     id: cat.id,
+      //     name: cat.name,
+      //     emoji: cat.emoji,
+      //     isIncome: cat.isIncome,
+      //   ),
+      //   amount: res.amount,
+      //   transactionDate: res.transactionDate.toString(),
+      //   createdAt: res.createdAt,
+      //   updatedAt: res.updatedAt,
+      // );
+
+      // TransactionResponseModel response = TransactionResponseModel(
+      //   id: transaction.id,
+      //   account: accountBriefModel.firstWhere(
+      //     (el) => el.id == transaction.accountId,
+      //   ),
+      //   category: categoryModel.firstWhere(
+      //     (el) => el.id == transaction.categoryId,
+      //   ),
+      //   amount: transaction.amount,
+      //   transactionDate: transaction.transactionDate,
+      //   createdAt: transaction.createdAt,
+      //   updatedAt: transaction.updatedAt,
+      // );
+
+      final response = await transactionMethods.getTransaction(id);
+      return response.copyWith(
+        account: response.account.copyWith(
+          currency: currencies[response.account.currency] ?? '₽',
         ),
-        category: CategoryModel(
-          id: cat.id,
-          name: cat.name,
-          emoji: cat.emoji,
-          isIncome: cat.isIncome,
-        ),
-        amount: res.amount,
-        transactionDate: res.transactionDate.toString(),
-        createdAt: res.createdAt,
-        updatedAt: res.updatedAt,
       );
-
-      TransactionResponseModel response = TransactionResponseModel(
-        id: transaction.id,
-        account: accountBriefModel.firstWhere(
-          (el) => el.id == transaction.accountId,
-        ),
-        category: categoryModel.firstWhere(
-          (el) => el.id == transaction.categoryId,
-        ),
-        amount: transaction.amount,
-        transactionDate: transaction.transactionDate,
-        createdAt: transaction.createdAt,
-        updatedAt: transaction.updatedAt,
-      );
-      return response;
     } catch (e) {
       log(e.toString());
       rethrow;

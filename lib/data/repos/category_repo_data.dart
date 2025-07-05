@@ -1,6 +1,8 @@
 import 'dart:developer';
 
 import 'package:financial_manager/data/database/drift_database.dart' as sql;
+import 'package:financial_manager/data/integration/api_client.dart';
+import 'package:financial_manager/data/methods/category_methods.dart';
 import 'package:financial_manager/data/models/category/category_model.dart';
 import 'package:financial_manager/domain/repos/category_repo_domain.dart';
 
@@ -10,6 +12,7 @@ class CategoryRepoData implements CategoryRepoDomain {
     CategoryModel(id: 1, name: "Зарплата", emoji: "💰", isIncome: true),
   ];
 
+  static final categoryMethods = CategoryMethods(ApiClient.dio);
   static final sql.AppDatabase _sqlDatabase = sql.AppDatabase();
 
   // Future<void> initialize() async {
@@ -20,21 +23,21 @@ class CategoryRepoData implements CategoryRepoDomain {
   @override
   Future<List<CategoryModel>> getCategories() async {
     try {
-      await Future.delayed(Duration(milliseconds: 200));
-      final res = await _sqlDatabase.getCategories();
-      List<CategoryModel> cats = [];
-      for (var record in res) {
-        cats.add(
-          CategoryModel(
-            id: record.id,
-            name: record.name,
-            emoji: record.emoji,
-            isIncome: record.isIncome,
-          ),
-        );
-      }
+      // await Future.delayed(Duration(milliseconds: 200));
+      // final res = await _sqlDatabase.getCategories();
+      // List<CategoryModel> cats = [];
+      // for (var record in res) {
+      //   cats.add(
+      //     CategoryModel(
+      //       id: record.id,
+      //       name: record.name,
+      //       emoji: record.emoji,
+      //       isIncome: record.isIncome,
+      //     ),
+      //   );
+      // }
 
-      final response = categories;
+      final response = await categoryMethods.getCategories();
       return response;
     } catch (e) {
       log(e.toString());
