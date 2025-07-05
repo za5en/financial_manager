@@ -51,6 +51,20 @@ final _light = ThemeData(
       foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
     ),
   ),
+  timePickerTheme: TimePickerThemeData(
+    backgroundColor: Color.fromRGBO(212, 250, 230, 1),
+    cancelButtonStyle: ButtonStyle().copyWith(
+      foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+    ),
+    confirmButtonStyle: ButtonStyle().copyWith(
+      foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
+    ),
+  ),
+  textSelectionTheme: const TextSelectionThemeData(
+    cursorColor: Color.fromRGBO(42, 232, 129, 1),
+    selectionColor: Color.fromRGBO(212, 250, 230, 1),
+    selectionHandleColor: Color.fromRGBO(42, 232, 129, 1),
+  ),
 );
 
 final _dark = ThemeData(fontFamily: 'Roboto');
