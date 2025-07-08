@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_floating_action_button.dart';
@@ -23,15 +24,8 @@ class AccountView extends StatefulWidget {
 }
 
 class _AccountViewState extends State<AccountView> {
-  final _currencies = [
-    ['Российский рубль ₽', Icons.currency_ruble_outlined, '₽'],
-    ['Американский доллар \$', Icons.attach_money_outlined, '\$'],
-    ['Евро', Icons.euro_outlined, '€'],
-    ['Отмена', Icons.cancel_outlined],
-  ];
   String currentCurrency = '₽';
   bool isEditing = false;
-  String accountName = 'Баланс';
   String tempName = '';
   bool showBalance = false;
   bool isDown = false;
@@ -136,24 +130,42 @@ class _AccountViewState extends State<AccountView> {
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
+
+    String accountName =
+        AppLocalizations.of(context)?.accountBalance ?? 'Баланс';
+
+    final currencies = [
+      [
+        AppLocalizations.of(context)?.ruble ?? 'Российский рубль ₽',
+        Icons.currency_ruble_outlined,
+        '₽',
+      ],
+      [
+        AppLocalizations.of(context)?.dollar ?? 'Американский доллар \$',
+        Icons.attach_money_outlined,
+        '\$',
+      ],
+      [AppLocalizations.of(context)?.euro ?? 'Евро', Icons.euro_outlined, '€'],
+      [AppLocalizations.of(context)?.cancel ?? 'Отмена', Icons.cancel_outlined],
+    ];
+
     return Scaffold(
       appBar: FAppbar(
-        title: 'Мой счет',
-        leading:
-            isEditing
-                ? InkWell(
-                  onTap: () {
-                    setState(() {
-                      isEditing = !isEditing;
-                      controller.text = '';
-                    });
-                  },
-                  child: Icon(
-                    Icons.close_outlined,
-                    color: Color.fromRGBO(73, 69, 79, 1),
-                  ),
-                )
-                : null,
+        title: AppLocalizations.of(context)?.account ?? 'Мой счет',
+        leading: isEditing
+            ? InkWell(
+                onTap: () {
+                  setState(() {
+                    isEditing = !isEditing;
+                    controller.text = '';
+                  });
+                },
+                child: Icon(
+                  Icons.close_outlined,
+                  color: Color.fromRGBO(73, 69, 79, 1),
+                ),
+              )
+            : null,
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -168,13 +180,12 @@ class _AccountViewState extends State<AccountView> {
                   isEditing = !isEditing;
                 });
               },
-              child:
-                  isEditing
-                      ? Icon(
-                        Icons.check_outlined,
-                        color: Color.fromRGBO(73, 69, 79, 1),
-                      )
-                      : FSvg(assetName: 'assets/images/edit.svg'),
+              child: isEditing
+                  ? Icon(
+                      Icons.check_outlined,
+                      color: Color.fromRGBO(73, 69, 79, 1),
+                    )
+                  : FSvg(assetName: 'assets/images/edit.svg'),
             ),
           ),
         ],
@@ -192,13 +203,12 @@ class _AccountViewState extends State<AccountView> {
             controller: controller,
             autofocus: true,
             isEmojiInContainer: true,
-            icon:
-                isEditing
-                    ? Icon(
-                      Icons.person_outline,
-                      color: Color.fromRGBO(73, 69, 79, 1),
-                    )
-                    : null,
+            icon: isEditing
+                ? Icon(
+                    Icons.person_outline,
+                    color: Color.fromRGBO(73, 69, 79, 1),
+                  )
+                : null,
             editName: isEditing ? true : false,
             emoji: !isEditing ? '💰' : null,
             emojiBackground: !isEditing ? Colors.white : null,
@@ -206,26 +216,20 @@ class _AccountViewState extends State<AccountView> {
               children: [
                 Padding(
                   padding: EdgeInsets.only(right: w * 0.035),
-                  child:
-                      showBalance
-                          ? Text('-670 000 ₽')
-                          : SpoilerText(
-                            text: '-670 000 ₽',
-                            config: TextSpoilerConfig(
-                              isEnabled: !showBalance,
-                              enableFadeAnimation: true,
-                              particleColor: Color.fromRGBO(
-                                218,
-                                218,
-                                218,
-                                0.498,
-                              ),
-                              textStyle: TextStyle(
-                                fontSize: 15,
-                                color: Colors.black,
-                              ),
+                  child: showBalance
+                      ? Text('-670 000 ₽')
+                      : SpoilerText(
+                          text: '-670 000 ₽',
+                          config: TextSpoilerConfig(
+                            isEnabled: !showBalance,
+                            enableFadeAnimation: true,
+                            particleColor: Color.fromRGBO(218, 218, 218, 0.498),
+                            textStyle: TextStyle(
+                              fontSize: 15,
+                              color: Colors.black,
                             ),
                           ),
+                        ),
                 ),
                 InkWell(
                   onTap: () {},
@@ -235,22 +239,21 @@ class _AccountViewState extends State<AccountView> {
                       right: isEditing ? w * 0.02 : w * 0.04,
                       left: isEditing ? w * 0.02 : 0,
                     ),
-                    color:
-                        isEditing
-                            ? Color.fromRGBO(228, 105, 98, 1)
-                            : Color.fromRGBO(212, 250, 230, 1),
+                    color: isEditing
+                        ? Color.fromRGBO(228, 105, 98, 1)
+                        : Color.fromRGBO(212, 250, 230, 1),
                     child: FSvg(
-                      assetName:
-                          isEditing
-                              ? 'assets/images/delete.svg'
-                              : 'assets/images/more.svg',
+                      assetName: isEditing
+                          ? 'assets/images/delete.svg'
+                          : 'assets/images/more.svg',
                     ),
                   ),
                 ),
               ],
             ),
-            backgroundColor:
-                isEditing ? Colors.white : Color.fromRGBO(212, 250, 230, 1),
+            backgroundColor: isEditing
+                ? Colors.white
+                : Color.fromRGBO(212, 250, 230, 1),
           ),
           Visibility(
             visible: !isEditing,
@@ -258,7 +261,7 @@ class _AccountViewState extends State<AccountView> {
               height: h * 0.06,
               leftPadding: 0,
               rightPadding: w * 0.04,
-              name: 'Валюта',
+              name: AppLocalizations.of(context)?.currency ?? 'Валюта',
               isEmojiInContainer: true,
               bottomBorderColor: Colors.transparent,
               rightSide: InkWell(
@@ -278,7 +281,7 @@ class _AccountViewState extends State<AccountView> {
                     useRootNavigator: true,
                     builder: (BuildContext context) {
                       return SizedBox(
-                        height: _currencies.length * h * 0.08,
+                        height: currencies.length * h * 0.08,
                         child: Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -286,16 +289,20 @@ class _AccountViewState extends State<AccountView> {
                             children: <Widget>[
                               Expanded(
                                 child: ListView.builder(
-                                  itemCount: _currencies.length,
+                                  itemCount: currencies.length,
                                   itemBuilder: (builder, index) {
                                     return InkWell(
                                       onTap: () {
-                                        if (_currencies[index][0] == 'Отмена') {
+                                        if (currencies[index][0] ==
+                                            (AppLocalizations.of(
+                                                  context,
+                                                )?.cancel ??
+                                                'Отмена')) {
                                           Navigator.pop(context);
                                         } else {
                                           setState(() {
                                             currentCurrency =
-                                                _currencies[index][2] as String;
+                                                currencies[index][2] as String;
                                           });
                                           Navigator.pop(context);
                                         }
@@ -304,34 +311,36 @@ class _AccountViewState extends State<AccountView> {
                                         height: h * 0.077,
                                         leftPadding: w * 0.04,
                                         rightPadding: w * 0.03,
-                                        name: _currencies[index][0] as String,
+                                        name: currencies[index][0] as String,
                                         isEmojiInContainer: false,
                                         nameColor:
-                                            _currencies[index][0] == 'Отмена'
-                                                ? Colors.white
-                                                : null,
+                                            currencies[index][0] ==
+                                                (AppLocalizations.of(
+                                                      context,
+                                                    )?.cancel ??
+                                                    'Отмена')
+                                            ? Colors.white
+                                            : null,
                                         icon: Icon(
-                                          _currencies[index][1] as IconData,
+                                          currencies[index][1] as IconData,
                                           color:
-                                              _currencies[index][0] != 'Отмена'
-                                                  ? Colors.black
-                                                  : Colors.white,
+                                              currencies[index][0] !=
+                                                  (AppLocalizations.of(
+                                                        context,
+                                                      )?.cancel ??
+                                                      'Отмена')
+                                              ? Colors.black
+                                              : Colors.white,
                                         ),
                                         rightSide: SizedBox(),
                                         backgroundColor:
-                                            _currencies[index][0] != 'Отмена'
-                                                ? Color.fromRGBO(
-                                                  247,
-                                                  242,
-                                                  250,
-                                                  1,
-                                                )
-                                                : Color.fromRGBO(
-                                                  228,
-                                                  105,
-                                                  98,
-                                                  1,
-                                                ),
+                                            currencies[index][0] !=
+                                                (AppLocalizations.of(
+                                                      context,
+                                                    )?.cancel ??
+                                                    'Отмена')
+                                            ? Color.fromRGBO(247, 242, 250, 1)
+                                            : Color.fromRGBO(228, 105, 98, 1),
                                       ),
                                     );
                                   },
@@ -376,7 +385,8 @@ class _AccountViewState extends State<AccountView> {
               width: w * 0.92,
               height: h * 0.044,
               topPadding: h * 0.036,
-              name: 'Удалить счет',
+              name:
+                  AppLocalizations.of(context)?.deleteAccount ?? 'Удалить счет',
             ),
           ),
         ],
@@ -391,23 +401,24 @@ class _AccountViewState extends State<AccountView> {
       getTooltipColor: (group) => Colors.transparent,
       tooltipPadding: EdgeInsets.zero,
       tooltipMargin: 8,
-      getTooltipItem: (
-        BarChartGroupData group,
-        int groupIndex,
-        BarChartRodData rod,
-        int rodIndex,
-      ) {
-        return BarTooltipItem(
-          rod.toY == 1
-              ? '0 $currentCurrency'
-              : '${rod.toY.toStringAsFixed(2)} $currentCurrency',
-          const TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-            fontSize: 12,
-          ),
-        );
-      },
+      getTooltipItem:
+          (
+            BarChartGroupData group,
+            int groupIndex,
+            BarChartRodData rod,
+            int rodIndex,
+          ) {
+            return BarTooltipItem(
+              rod.toY == 1
+                  ? '0 $currentCurrency'
+                  : '${rod.toY.toStringAsFixed(2)} $currentCurrency',
+              const TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                fontSize: 12,
+              ),
+            );
+          },
     ),
   );
 
@@ -466,16 +477,14 @@ class _AccountViewState extends State<AccountView> {
         x: i,
         barRods: [
           BarChartRodData(
-            toY:
-                days[i] == 0
-                    ? 1
-                    : days[i] < 0
-                    ? days[i] * -1
-                    : days[i],
-            color:
-                days[i] < 0
-                    ? Color.fromRGBO(255, 95, 0, 1)
-                    : Color.fromRGBO(42, 232, 129, 1),
+            toY: days[i] == 0
+                ? 1
+                : days[i] < 0
+                ? days[i] * -1
+                : days[i],
+            color: days[i] < 0
+                ? Color.fromRGBO(255, 95, 0, 1)
+                : Color.fromRGBO(42, 232, 129, 1),
           ),
         ],
       );

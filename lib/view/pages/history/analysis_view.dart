@@ -1,5 +1,6 @@
 import 'package:financial_manager/data/models/category/category_model.dart';
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/pages/history/category_view.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
@@ -161,7 +162,7 @@ class _AnalysisViewState extends State<AnalysisView> {
   }
 
   String cutText(String str) {
-    return '${str.substring(0, 10)}...';
+    return '${str.substring(0, 9)}...';
   }
 
   @override
@@ -185,7 +186,7 @@ class _AnalysisViewState extends State<AnalysisView> {
     double w = MediaQuery.of(context).size.width;
     return Scaffold(
       appBar: FAppbar(
-        title: 'Анализ',
+        title: AppLocalizations.of(context)?.analysis ?? 'Анализ',
         backgroundColor: Color.fromRGBO(254, 247, 255, 1),
         leading: Padding(
           padding: EdgeInsets.all(h * 0.02),
@@ -203,7 +204,8 @@ class _AnalysisViewState extends State<AnalysisView> {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Период: начало',
+            name:
+                '${AppLocalizations.of(context)?.period ?? 'Период'}: ${AppLocalizations.of(context)?.historyStart.toLowerCase() ?? 'конец'}',
             isEmojiInContainer: true,
             rightSide: InkWell(
               onTap: () {
@@ -230,7 +232,8 @@ class _AnalysisViewState extends State<AnalysisView> {
             height: h * 0.063,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Период: конец',
+            name:
+                '${AppLocalizations.of(context)?.period ?? 'Период'}: ${AppLocalizations.of(context)?.historyEnd.toLowerCase() ?? 'конец'}',
             isEmojiInContainer: true,
             rightSide: InkWell(
               onTap: () {
@@ -257,11 +260,10 @@ class _AnalysisViewState extends State<AnalysisView> {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Сумма',
-            rightSide:
-                transactions.isNotEmpty
-                    ? Text('$sum ${transactions[0].account.currency}')
-                    : Text('$sum ₽'),
+            name: AppLocalizations.of(context)?.historySum ?? 'Сумма',
+            rightSide: transactions.isNotEmpty
+                ? Text('$sum ${transactions[0].account.currency}')
+                : Text('$sum ₽'),
             backgroundColor: Color.fromRGBO(254, 247, 255, 1),
             isEmojiInContainer: true,
           ),
@@ -280,10 +282,9 @@ class _AnalysisViewState extends State<AnalysisView> {
                             touchedIndex = -1;
                             return;
                           }
-                          touchedIndex =
-                              pieTouchResponse
-                                  .touchedSection!
-                                  .touchedSectionIndex;
+                          touchedIndex = pieTouchResponse
+                              .touchedSection!
+                              .touchedSectionIndex;
                         });
                       },
                     ),
@@ -325,7 +326,7 @@ class _AnalysisViewState extends State<AnalysisView> {
                                 Padding(
                                   padding: EdgeInsets.only(left: w * 0.005),
                                   child: Text(
-                                    '${((categoriesSum[categories[index].id] ?? 1) / sum * 100).toStringAsFixed(2)}% ${categories[index].name.length > 12 ? cutText(categories[index].name) : categories[index].name}',
+                                    '${((categoriesSum[categories[index].id] ?? 1) / sum * 100).toStringAsFixed(2)}% ${categories[index].name.length > 10 ? cutText(categories[index].name) : categories[index].name}',
                                     style: TextStyle(fontSize: 11),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -351,31 +352,25 @@ class _AnalysisViewState extends State<AnalysisView> {
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder:
-                            (context) => CategoryView(
-                              categoryName: categories[index].name,
-                              startDate: DateFormat(
-                                'dd.MM.yyyy',
-                              ).format(startDate ?? DateTime.now()),
-                              endDate: DateFormat(
-                                'dd.MM.yyyy',
-                              ).format(endDate ?? DateTime.now()),
-                              sum:
-                                  categoriesSum[categories[index].id]
-                                      .toString(),
-                              currency:
-                                  transactions.isNotEmpty
-                                      ? transactions[0].account.currency
-                                      : '₽',
-                              transactions:
-                                  transactions
-                                      .where(
-                                        (item) =>
-                                            item.category.id ==
-                                            categories[index].id,
-                                      )
-                                      .toList(),
-                            ),
+                        builder: (context) => CategoryView(
+                          categoryName: categories[index].name,
+                          startDate: DateFormat(
+                            'dd.MM.yyyy',
+                          ).format(startDate ?? DateTime.now()),
+                          endDate: DateFormat(
+                            'dd.MM.yyyy',
+                          ).format(endDate ?? DateTime.now()),
+                          sum: categoriesSum[categories[index].id].toString(),
+                          currency: transactions.isNotEmpty
+                              ? transactions[0].account.currency
+                              : '₽',
+                          transactions: transactions
+                              .where(
+                                (item) =>
+                                    item.category.id == categories[index].id,
+                              )
+                              .toList(),
+                        ),
                       ),
                     );
                   },
@@ -384,15 +379,14 @@ class _AnalysisViewState extends State<AnalysisView> {
                     leftPadding: w * 0.04,
                     rightPadding: w * 0.03,
                     name: categories[index].name,
-                    description:
-                        transactions.isNotEmpty
-                            ? transactions
-                                .lastWhere(
-                                  (item) =>
-                                      item.category.id == categories[index].id,
-                                )
-                                .comment
-                            : null,
+                    description: transactions.isNotEmpty
+                        ? transactions
+                              .lastWhere(
+                                (item) =>
+                                    item.category.id == categories[index].id,
+                              )
+                              .comment
+                        : null,
                     emoji: categories[index].emoji,
                     isEmojiInContainer: true,
                     rightSide: Row(
@@ -443,22 +437,21 @@ class _AnalysisViewState extends State<AnalysisView> {
           color: Colors.black,
           shadows: shadows,
         ),
-        badgeWidget:
-            isTouched
-                ? Container(
-                  width: MediaQuery.of(context).size.width * 0.25,
-                  padding: EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: colors[i % 4],
-                    borderRadius: BorderRadius.circular(35),
-                  ),
-                  child: Text(
-                    '${((categoriesSum[categories[i].id] ?? 1) / sum * 100).toStringAsFixed(2)}%\n${categories[i].name}',
-                    textAlign: TextAlign.center,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                )
-                : null,
+        badgeWidget: isTouched
+            ? Container(
+                width: MediaQuery.of(context).size.width * 0.28,
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: colors[i % 4],
+                  borderRadius: BorderRadius.circular(35),
+                ),
+                child: Text(
+                  '${((categoriesSum[categories[i].id] ?? 1) / sum * 100).toStringAsFixed(2)}%\n${categories[i].name}',
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              )
+            : null,
       );
     });
   }

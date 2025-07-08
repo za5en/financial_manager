@@ -1,4 +1,5 @@
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/pages/history/analysis_view.dart';
 import 'package:financial_manager/view/pages/history/manage_view.dart';
@@ -9,24 +10,22 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class HistoryView extends StatefulWidget {
-  const HistoryView({super.key, required this.isIncome});
+  const HistoryView({
+    super.key,
+    required this.isIncome,
+    required this.defaultSort,
+  });
   final bool isIncome;
+  final String defaultSort;
 
   @override
   State<HistoryView> createState() => _HistoryViewState();
 }
 
-const List<String> sortOptions = [
-  'По дате (▼)',
-  'По дате (▲)',
-  'По сумме (▼)',
-  'По сумме (▲)',
-];
-
 class _HistoryViewState extends State<HistoryView> {
   DateTime? startDate;
   DateTime? endDate;
-  String selectedSort = sortOptions.first;
+  String selectedSort = '';
   List<TransactionResponseModel> transactions = [];
   double sum = 0;
 
@@ -139,19 +138,22 @@ class _HistoryViewState extends State<HistoryView> {
   }
 
   void updateSort(String? sortType) {
-    if (sortType == sortOptions[0]) {
+    if (sortType ==
+        '${AppLocalizations.of(context)?.sortByDate ?? 'По дате'} (▼)') {
       transactions.sort(
         (b, a) => DateTime.parse(
           a.transactionDate,
         ).compareTo(DateTime.parse(b.transactionDate)),
       );
-    } else if (sortType == sortOptions[0]) {
+    } else if (sortType ==
+        '${AppLocalizations.of(context)?.sortByDate ?? 'По дате'} (▲)') {
       transactions.sort(
         (a, b) => DateTime.parse(
           a.transactionDate,
         ).compareTo(DateTime.parse(b.transactionDate)),
       );
-    } else if (sortType == sortOptions[2]) {
+    } else if (sortType ==
+        '${AppLocalizations.of(context)?.sortByDate ?? 'По сумме'} (▼)') {
       transactions.sort(
         (b, a) => double.parse(a.amount).compareTo(double.parse(b.amount)),
       );
@@ -161,7 +163,9 @@ class _HistoryViewState extends State<HistoryView> {
       );
     }
     setState(() {
-      selectedSort = sortType ?? sortOptions.first;
+      selectedSort =
+          sortType ??
+          '${AppLocalizations.of(context)?.sortByDate ?? 'По дате'} (▼)';
     });
   }
 
@@ -177,6 +181,7 @@ class _HistoryViewState extends State<HistoryView> {
     startDate ??= DateTime(startDay.year, startDay.month - 1, startDay.day);
     endDate ??= startDay.add(Duration(days: 1)).subtract(Duration(seconds: 1));
     getTransactions();
+    selectedSort = widget.defaultSort;
     super.initState();
   }
 
@@ -185,9 +190,16 @@ class _HistoryViewState extends State<HistoryView> {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
 
+    List<String> sortOptions = [
+      '${AppLocalizations.of(context)?.sortByDate ?? 'По дате'} (▼)',
+      '${AppLocalizations.of(context)?.sortByDate ?? 'По дате'} (▲)',
+      '${AppLocalizations.of(context)?.sortBySum ?? 'По сумме'} (▼)',
+      '${AppLocalizations.of(context)?.sortBySum ?? 'По сумме'} (▲)',
+    ];
+
     return Scaffold(
       appBar: FAppbar(
-        title: 'Моя история',
+        title: AppLocalizations.of(context)?.history ?? 'Моя история',
         leading: Padding(
           padding: EdgeInsets.all(h * 0.02),
           child: InkWell(
@@ -205,8 +217,8 @@ class _HistoryViewState extends State<HistoryView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (context) => AnalysisView(isIncome: widget.isIncome),
+                    builder: (context) =>
+                        AnalysisView(isIncome: widget.isIncome),
                   ),
                 );
               },
@@ -221,7 +233,7 @@ class _HistoryViewState extends State<HistoryView> {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Начало',
+            name: AppLocalizations.of(context)?.historyStart ?? 'Начало',
             isEmojiInContainer: true,
             rightSide: InkWell(
               onTap: () {
@@ -237,7 +249,7 @@ class _HistoryViewState extends State<HistoryView> {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Конец',
+            name: AppLocalizations.of(context)?.historyEnd ?? 'Конец',
             isEmojiInContainer: true,
             rightSide: InkWell(
               onTap: () {
@@ -253,16 +265,12 @@ class _HistoryViewState extends State<HistoryView> {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Сортировка',
+            name: AppLocalizations.of(context)?.historySort ?? 'Сортировка',
             isEmojiInContainer: true,
             rightSide: DropdownButton<String>(
-              items:
-                  sortOptions.map<DropdownMenuItem<String>>((String val) {
-                    return DropdownMenuItem<String>(
-                      value: val,
-                      child: Text(val),
-                    );
-                  }).toList(),
+              items: sortOptions.map<DropdownMenuItem<String>>((String val) {
+                return DropdownMenuItem<String>(value: val, child: Text(val));
+              }).toList(),
               value: selectedSort,
               style: TextStyle(
                 fontSize: 14,
@@ -280,11 +288,10 @@ class _HistoryViewState extends State<HistoryView> {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Сумма',
-            rightSide:
-                transactions.isNotEmpty
-                    ? Text('$sum ${transactions[0].account.currency}')
-                    : Text('$sum ₽'),
+            name: AppLocalizations.of(context)?.historySum ?? 'Сумма',
+            rightSide: transactions.isNotEmpty
+                ? Text('$sum ${transactions[0].account.currency}')
+                : Text('$sum ₽'),
             backgroundColor: Color.fromRGBO(212, 250, 230, 1),
             isEmojiInContainer: true,
           ),
@@ -292,7 +299,10 @@ class _HistoryViewState extends State<HistoryView> {
             visible: transactions.isEmpty,
             child: Padding(
               padding: EdgeInsets.only(top: h * 0.25),
-              child: Text('Транзакции за указанный период не найдены'),
+              child: Text(
+                AppLocalizations.of(context)?.noTransactions ??
+                    'Транзакции за указанный период не найдены',
+              ),
             ),
           ),
           Expanded(

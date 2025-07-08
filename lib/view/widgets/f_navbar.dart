@@ -1,3 +1,4 @@
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/widgets/f_svg.dart';
 import 'package:flutter/material.dart';
 
@@ -44,8 +45,6 @@ class _FNavbarState extends State<FNavbar> {
 
   @override
   Widget build(BuildContext context) {
-    // var currentRoute = ModalRoute.of(context)?.settings.name;
-    // _currentPageIndex = routes.indexOf(currentRoute ?? '/');
     return NavigationBar(
       backgroundColor: Color.fromRGBO(243, 237, 247, 1),
       onDestinationSelected: widget.destinationSelect,
@@ -58,7 +57,9 @@ class _FNavbarState extends State<FNavbar> {
             assetName: icons.values.elementAt(0),
             color: Color.fromRGBO(42, 232, 129, 1),
           ),
-          label: icons.keys.elementAt(0),
+          label:
+              AppLocalizations.of(context)?.expensesTab ??
+              icons.keys.elementAt(0),
         ),
         NavigationDestination(
           icon: FSvg(assetName: icons.values.elementAt(1)),
@@ -66,7 +67,9 @@ class _FNavbarState extends State<FNavbar> {
             assetName: icons.values.elementAt(1),
             color: Color.fromRGBO(42, 232, 129, 1),
           ),
-          label: icons.keys.elementAt(1),
+          label:
+              AppLocalizations.of(context)?.incomesTab ??
+              icons.keys.elementAt(1),
         ),
         NavigationDestination(
           icon: FSvg(assetName: icons.values.elementAt(2)),
@@ -74,7 +77,9 @@ class _FNavbarState extends State<FNavbar> {
             assetName: icons.values.elementAt(2),
             color: Color.fromRGBO(42, 232, 129, 1),
           ),
-          label: icons.keys.elementAt(2),
+          label:
+              AppLocalizations.of(context)?.accountTab ??
+              icons.keys.elementAt(2),
         ),
         NavigationDestination(
           icon: FSvg(assetName: icons.values.elementAt(3)),
@@ -82,7 +87,9 @@ class _FNavbarState extends State<FNavbar> {
             assetName: icons.values.elementAt(3),
             color: Color.fromRGBO(42, 232, 129, 1),
           ),
-          label: icons.keys.elementAt(3),
+          label:
+              AppLocalizations.of(context)?.articlesTab ??
+              icons.keys.elementAt(3),
         ),
         NavigationDestination(
           icon: FSvg(assetName: icons.values.elementAt(4)),
@@ -90,7 +97,8 @@ class _FNavbarState extends State<FNavbar> {
             assetName: icons.values.elementAt(4),
             color: Color.fromRGBO(42, 232, 129, 1),
           ),
-          label: icons.keys.elementAt(4),
+          label:
+              AppLocalizations.of(context)?.settings ?? icons.keys.elementAt(4),
         ),
       ],
     );

@@ -1,3 +1,4 @@
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
 import 'package:flutter/material.dart';
@@ -5,23 +6,25 @@ import 'package:flutter/material.dart';
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
 
-  static const List<String> settings = [
-    'Тёмная тема',
-    'Основной цвет',
-    'Звуки',
-    'Хаптики',
-    'Код пароль',
-    'Синхронизация',
-    'Язык',
-    'О программе',
-  ];
-
   @override
   Widget build(BuildContext context) {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
+
+    List<String> settings = [
+      AppLocalizations.of(context)?.darkTheme ?? 'Тёмная тема',
+      AppLocalizations.of(context)?.mainColor ?? 'Основной цвет',
+      AppLocalizations.of(context)?.sounds ?? 'Звуки',
+      AppLocalizations.of(context)?.haptics ?? 'Хаптики',
+      AppLocalizations.of(context)?.passwordCode ?? 'Код пароль',
+      AppLocalizations.of(context)?.sync ?? 'Синхронизация',
+      AppLocalizations.of(context)?.language ?? 'Язык',
+      AppLocalizations.of(context)?.about ?? 'О программе',
+    ];
     return Scaffold(
-      appBar: FAppbar(title: 'Настройки'),
+      appBar: FAppbar(
+        title: AppLocalizations.of(context)?.settings ?? 'Настройки',
+      ),
       body: Column(
         children: [
           Expanded(
@@ -36,13 +39,12 @@ class SettingsView extends StatelessWidget {
                     leftPadding: w * 0.02,
                     rightPadding: w * 0.02,
                     name: settings[index],
-                    rightSide:
-                        index == 0
-                            ? ThemeSwitch()
-                            : Icon(
-                              Icons.arrow_right,
-                              color: Color.fromRGBO(73, 69, 79, 1),
-                            ),
+                    rightSide: index == 0
+                        ? ThemeSwitch()
+                        : Icon(
+                            Icons.arrow_right,
+                            color: Color.fromRGBO(73, 69, 79, 1),
+                          ),
                     backgroundColor: Color.fromRGBO(254, 247, 255, 1),
                     isEmojiInContainer: true,
                   ),

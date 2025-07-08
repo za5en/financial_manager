@@ -1,4 +1,5 @@
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/pages/history/history_view.dart';
 import 'package:financial_manager/view/pages/history/manage_view.dart';
@@ -80,7 +81,9 @@ class _FinancesViewState extends State<FinancesView> {
 
     return Scaffold(
       appBar: FAppbar(
-        title: '${widget.isIncome ? 'Доходы' : 'Расходы'} сегодня',
+        title: widget.isIncome
+            ? AppLocalizations.of(context)?.incomes ?? 'Доходы сегодня'
+            : AppLocalizations.of(context)?.expenses ?? 'Расходы сегодня',
         actions: <Widget>[
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
@@ -89,8 +92,11 @@ class _FinancesViewState extends State<FinancesView> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (context) => HistoryView(isIncome: widget.isIncome),
+                    builder: (context) => HistoryView(
+                      isIncome: widget.isIncome,
+                      defaultSort:
+                          '${AppLocalizations.of(context)?.sortByDate ?? 'По дате'} (▼)',
+                    ),
                   ),
                 );
               },
@@ -105,11 +111,10 @@ class _FinancesViewState extends State<FinancesView> {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Всего',
-            rightSide:
-                transactions.isNotEmpty
-                    ? Text('$sum ${transactions[0].account.currency}')
-                    : Text('$sum ₽'),
+            name: AppLocalizations.of(context)?.total ?? 'Всего',
+            rightSide: transactions.isNotEmpty
+                ? Text('$sum ${transactions[0].account.currency}')
+                : Text('$sum ₽'),
             backgroundColor: Color.fromRGBO(212, 250, 230, 1),
             isEmojiInContainer: true,
           ),
@@ -120,8 +125,10 @@ class _FinancesViewState extends State<FinancesView> {
               child: Center(
                 child: Text(
                   widget.isIncome
-                      ? 'Доходов за сегодня нет'
-                      : 'Расходов за сегодня нет',
+                      ? AppLocalizations.of(context)?.noIncomes ??
+                            'Доходов за сегодня нет'
+                      : AppLocalizations.of(context)?.noExpenses ??
+                            'Расходов за сегодня нет',
                 ),
               ),
             ),
@@ -153,10 +160,9 @@ class _FinancesViewState extends State<FinancesView> {
                     name: transactions[index].category.name,
                     description: transactions[index].comment,
                     isEmojiInContainer: true,
-                    emoji:
-                        widget.isIncome
-                            ? transactions[index].category.emoji
-                            : null,
+                    emoji: widget.isIncome
+                        ? transactions[index].category.emoji
+                        : null,
                     rightSide: Row(
                       children: [
                         Padding(

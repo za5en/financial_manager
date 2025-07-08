@@ -1,4 +1,5 @@
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
 import 'package:financial_manager/view/widgets/f_svg.dart';
@@ -46,7 +47,8 @@ class CategoryView extends StatelessWidget {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Период: начало',
+            name:
+                '${AppLocalizations.of(context)?.period ?? 'Период'}: ${AppLocalizations.of(context)?.historyStart.toLowerCase() ?? 'конец'}',
             isEmojiInContainer: true,
             rightSide: Text(startDate),
             backgroundColor: Color.fromRGBO(254, 247, 255, 1),
@@ -55,7 +57,8 @@ class CategoryView extends StatelessWidget {
             height: h * 0.063,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Период: конец',
+            name:
+                '${AppLocalizations.of(context)?.period ?? 'Период'}: ${AppLocalizations.of(context)?.historyEnd.toLowerCase() ?? 'конец'}',
             isEmojiInContainer: true,
             rightSide: Text(endDate),
             backgroundColor: Color.fromRGBO(254, 247, 255, 1),
@@ -64,7 +67,7 @@ class CategoryView extends StatelessWidget {
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
-            name: 'Сумма',
+            name: AppLocalizations.of(context)?.historySum ?? 'Сумма',
             rightSide: Text('$sum $currency'),
             backgroundColor: Color.fromRGBO(254, 247, 255, 1),
             isEmojiInContainer: true,

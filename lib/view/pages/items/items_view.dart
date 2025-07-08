@@ -1,3 +1,4 @@
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
 import 'package:financial_manager/view/widgets/f_search_line.dart';
@@ -42,11 +43,14 @@ class _ItemsViewState extends State<ItemsView> {
     for (var article in _articles) {
       fuseArray.add(article[0]);
     }
-    List searchList =
-        Fuzzy(fuseArray).search(query).map((e) => e.item).toList();
+    List searchList = Fuzzy(
+      fuseArray,
+    ).search(query).map((e) => e.item).toList();
 
     return Scaffold(
-      appBar: FAppbar(title: 'Мои статьи'),
+      appBar: FAppbar(
+        title: AppLocalizations.of(context)?.articles ?? 'Мои статьи',
+      ),
       body: Column(
         children: [
           FSearchLine(
@@ -70,18 +74,18 @@ class _ItemsViewState extends State<ItemsView> {
                   isEmojiInContainer: true,
                   emoji:
                       _articles
-                                  .where((item) => item[0] == searchList[index])
-                                  .first
-                                  .length >
-                              1
-                          ? _articles
                               .where((item) => item[0] == searchList[index])
-                              .first[1]
-                          : letters(
-                            _articles
-                                .where((item) => item[0] == searchList[index])
-                                .first[0],
-                          ),
+                              .first
+                              .length >
+                          1
+                      ? _articles
+                            .where((item) => item[0] == searchList[index])
+                            .first[1]
+                      : letters(
+                          _articles
+                              .where((item) => item[0] == searchList[index])
+                              .first[0],
+                        ),
                   rightSide: SizedBox(),
                   backgroundColor: Color.fromRGBO(254, 247, 255, 1),
                 );

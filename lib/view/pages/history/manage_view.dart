@@ -1,6 +1,7 @@
 import 'package:financial_manager/data/models/account/account_model.dart';
 import 'package:financial_manager/data/models/category/category_model.dart';
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/link/account_info.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
 import 'package:financial_manager/view/link/categories.dart';
@@ -31,14 +32,6 @@ class ManageView extends StatefulWidget {
 class _ManageViewState extends State<ManageView> {
   final TextEditingController sumController = TextEditingController();
   final TextEditingController descController = TextEditingController();
-  static const List<String> settings = [
-    'Счет',
-    'Статья',
-    'Сумма',
-    'Дата',
-    'Время',
-    'Комментарий',
-  ];
 
   TransactionResponseModel? transactionInfo;
   List<AccountModel> accounts = [];
@@ -121,8 +114,9 @@ class _ManageViewState extends State<ManageView> {
     setState(() {
       accounts = response;
       if (!widget.isEditMode) {
-        selectedAccount =
-            accounts[0].name == '' ? 'Без названия' : accounts[0].name;
+        selectedAccount = accounts[0].name == ''
+            ? AppLocalizations.of(context)?.accountNoName ?? 'Без названия'
+            : accounts[0].name;
       }
     });
   }
@@ -147,10 +141,9 @@ class _ManageViewState extends State<ManageView> {
 
     setState(() {
       transactionInfo = response;
-      selectedAccount =
-          transactionInfo?.account.name == ''
-              ? 'Без названия'
-              : transactionInfo?.account.name ?? 'Account';
+      selectedAccount = transactionInfo?.account.name == ''
+          ? AppLocalizations.of(context)?.accountNoName ?? 'Без названия'
+          : transactionInfo?.account.name ?? 'Account';
       if (!accounts
           .map((item) => item.name)
           .contains(transactionInfo?.account.name)) {
@@ -158,7 +151,10 @@ class _ManageViewState extends State<ManageView> {
           AccountModel(
             id: transactionInfo?.account.id ?? 1,
             userId: 1,
-            name: transactionInfo?.account.name ?? 'Без названия',
+            name:
+                transactionInfo?.account.name ??
+                AppLocalizations.of(context)?.accountNoName ??
+                'Без названия',
             balance: transactionInfo?.account.balance ?? '1000',
             currency: currency,
             createdAt: DateTime.now().toString(),
@@ -201,15 +197,30 @@ class _ManageViewState extends State<ManageView> {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
 
+    List<String> settings = [
+      AppLocalizations.of(context)?.accountName ?? 'Счет',
+      AppLocalizations.of(context)?.articleName ?? 'Статья',
+      AppLocalizations.of(context)?.historySum ?? 'Сумма',
+      AppLocalizations.of(context)?.date ?? 'Дата',
+      AppLocalizations.of(context)?.time ?? 'Время',
+      AppLocalizations.of(context)?.comment ?? 'Комментарий',
+    ];
+
     List<Widget> rightSides = [
       DropdownButton<String>(
-        items:
-            accounts.map<DropdownMenuItem<String>>((AccountModel val) {
-              return DropdownMenuItem<String>(
-                value: val.name == '' ? 'Без названия' : val.name,
-                child: Text(val.name == '' ? 'Без названия' : val.name),
-              );
-            }).toList(),
+        items: accounts.map<DropdownMenuItem<String>>((AccountModel val) {
+          return DropdownMenuItem<String>(
+            value: val.name == ''
+                ? AppLocalizations.of(context)?.accountNoName ?? 'Без названия'
+                : val.name,
+            child: Text(
+              val.name == ''
+                  ? AppLocalizations.of(context)?.accountNoName ??
+                        'Без названия'
+                  : val.name,
+            ),
+          );
+        }).toList(),
         value: selectedAccount,
         style: TextStyle(
           fontSize: 14,
@@ -227,13 +238,12 @@ class _ManageViewState extends State<ManageView> {
         ),
       ),
       DropdownButton<String>(
-        items:
-            articles.map<DropdownMenuItem<String>>((CategoryModel val) {
-              return DropdownMenuItem<String>(
-                value: val.name,
-                child: Text(val.name),
-              );
-            }).toList(),
+        items: articles.map<DropdownMenuItem<String>>((CategoryModel val) {
+          return DropdownMenuItem<String>(
+            value: val.name,
+            child: Text(val.name),
+          );
+        }).toList(),
         value: selectedArticle,
         style: TextStyle(
           fontSize: 14,
@@ -279,7 +289,7 @@ class _ManageViewState extends State<ManageView> {
                 child: Text(currency),
               ),
             ),
-            hintText: 'Сумма',
+            hintText: AppLocalizations.of(context)?.historySum ?? 'Сумма',
           ),
           onTapOutside: (event) => FocusScope.of(context).unfocus(),
         ),
@@ -304,7 +314,9 @@ class _ManageViewState extends State<ManageView> {
     return Dialog.fullscreen(
       child: Scaffold(
         appBar: FAppbar(
-          title: widget.isIncome ? 'Мои доходы' : 'Мои расходы',
+          title: widget.isIncome
+              ? AppLocalizations.of(context)?.myIncomes ?? 'Мои доходы'
+              : AppLocalizations.of(context)?.myExpenses ?? 'Мои расходы',
           leading: InkWell(
             onTap: () {
               if (isChanged) {
@@ -313,10 +325,11 @@ class _ManageViewState extends State<ManageView> {
                   builder: (BuildContext newContext) {
                     return FAlertDialog(
                       title: Text(
-                        'Отменить ${widget.isIncome ? 'редактирование' : 'создание'}?',
+                        '${widget.isEditMode ? AppLocalizations.of(context)?.cancelEdit ?? 'Отменить редактирование' : AppLocalizations.of(context)?.cancelCreate ?? 'Отменить создание'}?',
                       ),
                       content: Text(
-                        'Вы действительно хотите отменить изменения?',
+                        AppLocalizations.of(context)?.cancelEditDesc ??
+                            'Вы действительно хотите отменить изменения?',
                       ),
                       actions: <Widget>[
                         TextButton(
@@ -326,7 +339,9 @@ class _ManageViewState extends State<ManageView> {
                               Colors.black,
                             ),
                           ),
-                          child: const Text('Отмена'),
+                          child: Text(
+                            AppLocalizations.of(context)?.cancel ?? 'Отмена',
+                          ),
                         ),
                         TextButton(
                           onPressed: () {
@@ -364,10 +379,15 @@ class _ManageViewState extends State<ManageView> {
                       builder: (BuildContext context) {
                         return FAlertDialog(
                           title: Text(
-                            'Ошибка ${widget.isEditMode ? 'сохранения' : 'создания'}',
+                            widget.isEditMode
+                                ? AppLocalizations.of(context)?.editError ??
+                                      'Ошибка сохранения'
+                                : AppLocalizations.of(context)?.createError ??
+                                      'Ошибка создания',
                           ),
                           content: Text(
-                            'Необходимо заполнить все обязательные поля (все кроме комментария)',
+                            AppLocalizations.of(context)?.createErrorDesc ??
+                                'Необходимо заполнить все обязательные поля (все кроме комментария)',
                           ),
                           actions: <Widget>[
                             TextButton(
@@ -414,21 +434,22 @@ class _ManageViewState extends State<ManageView> {
                           leftPadding: w * 0.02,
                           rightPadding: index < 2 ? w * 0.02 : w * 0.04,
                           editName: index == settings.length - 1,
-                          controller:
-                              index == settings.length - 1
-                                  ? descController
-                                  : null,
+                          controller: index == settings.length - 1
+                              ? descController
+                              : null,
                           hint:
                               index == settings.length - 1 && !widget.isEditMode
-                                  ? 'Комментарий'
-                                  : null,
+                              ? AppLocalizations.of(context)?.comment ??
+                                    'Комментарий'
+                              : null,
                           onNameChanged: (value) {
                             setState(() {
                               isChanged = true;
                             });
                           },
-                          autofocus:
-                              index == settings.length - 1 ? false : null,
+                          autofocus: index == settings.length - 1
+                              ? false
+                              : null,
                           width: index == settings.length - 1 ? w * 0.9 : null,
                           name: settings[index],
                           rightSide: rightSides[index],
@@ -447,10 +468,10 @@ class _ManageViewState extends State<ManageView> {
                           builder: (BuildContext newContext) {
                             return FAlertDialog(
                               title: Text(
-                                'Удалить ${widget.isIncome ? 'доход' : 'расход'}?',
+                                '${widget.isIncome ? AppLocalizations.of(context)?.deleteIncome ?? 'Удалить доход' : AppLocalizations.of(context)?.deleteExpense ?? 'Удалить расход'}?',
                               ),
                               content: Text(
-                                'Вы действительно хотите удалить ${widget.isIncome ? 'доход' : 'расход'}?',
+                                '${widget.isIncome ? AppLocalizations.of(context)?.deleteIncomeDesc ?? 'Вы действительно хотите удалить доход' : AppLocalizations.of(context)?.deleteExpenseDesc ?? 'Вы действительно хотите удалить расход'}?',
                               ),
                               actions: <Widget>[
                                 TextButton(
@@ -461,7 +482,10 @@ class _ManageViewState extends State<ManageView> {
                                           Colors.black,
                                         ),
                                   ),
-                                  child: const Text('Отмена'),
+                                  child: Text(
+                                    AppLocalizations.of(context)?.cancel ??
+                                        'Отмена',
+                                  ),
                                 ),
                                 TextButton(
                                   onPressed: () {
@@ -474,7 +498,10 @@ class _ManageViewState extends State<ManageView> {
                                           Colors.black,
                                         ),
                                   ),
-                                  child: const Text('Удалить'),
+                                  child: Text(
+                                    AppLocalizations.of(context)?.delete ??
+                                        'Удалить',
+                                  ),
                                 ),
                               ],
                             );
@@ -484,7 +511,11 @@ class _ManageViewState extends State<ManageView> {
                       width: w * 0.92,
                       height: h * 0.044,
                       topPadding: h * 0.036,
-                      name: 'Удалить ${widget.isIncome ? 'доход' : 'расход'}',
+                      name: widget.isIncome
+                          ? AppLocalizations.of(context)?.deleteIncome ??
+                                'Удалить доход'
+                          : AppLocalizations.of(context)?.deleteExpense ??
+                                'Удалить расход',
                     ),
                   ),
                 ],
