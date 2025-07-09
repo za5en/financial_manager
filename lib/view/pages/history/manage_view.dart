@@ -64,7 +64,7 @@ class _ManageViewState extends State<ManageView> {
   Future<void> _selectDate() async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      locale: const Locale('ru', 'RU'),
+      locale: Localizations.localeOf(context),
       initialDate: transactionDate,
       firstDate: DateTime(
         DateTime.now().year - 5,
@@ -91,7 +91,7 @@ class _ManageViewState extends State<ManageView> {
           data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
           child: Localizations.override(
             context: context,
-            locale: const Locale('ru', 'RU'),
+            locale: Localizations.localeOf(context),
             child: child!,
           ),
         );

@@ -37,7 +37,7 @@ class _AnalysisViewState extends State<AnalysisView> {
   Future<void> _selectDate(bool isStart) async {
     DateTime? pickedDate = await showDatePicker(
       context: context,
-      locale: const Locale('ru', 'RU'),
+      locale: Localizations.localeOf(context),
       initialDate: isStart ? startDate : endDate,
       firstDate: DateTime(
         DateTime.now().year - 5,
