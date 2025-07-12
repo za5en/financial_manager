@@ -1,3 +1,4 @@
+import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:flutter/material.dart';
 
 class FSearchLine extends StatefulWidget {
@@ -44,7 +45,9 @@ class _FSearchLineState extends State<FSearchLine> {
                 enabledBorder: OutlineInputBorder(borderSide: BorderSide.none),
                 focusedBorder: OutlineInputBorder(borderSide: BorderSide.none),
                 border: OutlineInputBorder(borderSide: BorderSide.none),
-                hintText: 'Найти статью',
+                hintText:
+                    AppLocalizations.of(context)?.findArticles ??
+                    'Найти статью',
                 suffixIcon: Icon(
                   Icons.search_outlined,
                   color: Color.fromRGBO(73, 69, 79, 1),

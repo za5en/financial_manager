@@ -7,7 +7,7 @@ class AccountInfo {
   final accountLink = AccountLink();
 
   Future<List<AccountModel>> getAccount() async {
-    final request = await accountLink.makeRequest();
+    final request = await accountLink.getAccount();
 
     return request;
   }

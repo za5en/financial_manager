@@ -11,12 +11,11 @@ _AccountHistoryModel _$AccountHistoryModelFromJson(Map<String, dynamic> json) =>
       id: (json['id'] as num).toInt(),
       accountId: (json['accountId'] as num).toInt(),
       changeType: $enumDecode(_$ChangeTypeEnumMap, json['changeType']),
-      previousState:
-          json['previousState'] == null
-              ? null
-              : AccountStateModel.fromJson(
-                json['previousState'] as Map<String, dynamic>,
-              ),
+      previousState: json['previousState'] == null
+          ? null
+          : AccountStateModel.fromJson(
+              json['previousState'] as Map<String, dynamic>,
+            ),
       newState: AccountStateModel.fromJson(
         json['newState'] as Map<String, dynamic>,
       ),

@@ -7,7 +7,7 @@ class Categories {
   final categoryLink = CategoryLink();
 
   Future<List<CategoryModel>> getCategories() async {
-    final request = await categoryLink.makeRequest();
+    final request = await categoryLink.getCategories();
 
     return request;
   }

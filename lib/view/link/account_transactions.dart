@@ -20,8 +20,10 @@ class AccountTransactions {
 
     return isIncome != null
         ? isIncome
-            ? request.where((val) => val.category.isIncome).toList()
-            : request.where((val) => !val.category.isIncome).toList()
+              ? request.where((val) => val.category?.isIncome ?? true).toList()
+              : request
+                    .where((val) => !(val.category?.isIncome ?? false))
+                    .toList()
         : request;
   }
 
