@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:financial_manager/router/router_main.dart';
 import 'package:financial_manager/view/pages/home_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -22,18 +23,12 @@ Future<void> main() async {
   runApp(const FMApp());
 }
 
-class FMApp extends StatefulWidget {
+class FMApp extends StatelessWidget {
   const FMApp({super.key});
 
   @override
-  State<FMApp> createState() => _FMAppState();
-}
-
-class _FMAppState extends State<FMApp> {
-  final initialRoute = '/';
-  final theme = ColorThemes.main;
-  @override
   Widget build(BuildContext context) {
+    final theme = ColorThemes.main;
     return StreamBuilder<Object>(
       stream: themeColor.stream,
       builder: (context, snapshot) {
@@ -41,12 +36,9 @@ class _FMAppState extends State<FMApp> {
           DeviceOrientation.portraitUp,
           DeviceOrientation.portraitDown,
         ]);
-        return MaterialApp(
-          onGenerateRoute: (settings) {
-            return MaterialPageRoute(builder: (context) => HomePage());
-          },
+        return MaterialApp.router(
+          routerConfig: RouterMain.router,
           debugShowCheckedModeBanner: false,
-          initialRoute: initialRoute,
           theme: theme.light,
           localizationsDelegates: [
             AppLocalizations.delegate,
@@ -56,6 +48,21 @@ class _FMAppState extends State<FMApp> {
           ],
           supportedLocales: [const Locale('en'), const Locale('ru')],
         );
+        // return MaterialApp(
+        //   onGenerateRoute: (settings) {
+        //     return MaterialPageRoute(builder: (context) => HomePage());
+        //   },
+        //   debugShowCheckedModeBanner: false,
+        //   initialRoute: initialRoute,
+        //   theme: theme.light,
+        //   localizationsDelegates: [
+        //     AppLocalizations.delegate,
+        //     GlobalMaterialLocalizations.delegate,
+        //     GlobalWidgetsLocalizations.delegate,
+        //     GlobalCupertinoLocalizations.delegate,
+        //   ],
+        //   supportedLocales: [const Locale('en'), const Locale('ru')],
+        // );
       },
     );
   }

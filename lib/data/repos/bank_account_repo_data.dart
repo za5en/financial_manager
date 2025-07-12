@@ -216,8 +216,9 @@ class BankAccountRepoData implements BankAccountRepoDomain {
         throw Exception();
       }
       final account = accounts.firstWhere((el) => el.id == id);
-      final accountHistory =
-          history.where((el) => el.accountId == account.id).toList();
+      final accountHistory = history
+          .where((el) => el.accountId == account.id)
+          .toList();
 
       final res = await _sqlDatabase.getAccountHistory(id);
       final acc = AccountHistoryResponseModel(
@@ -233,24 +234,23 @@ class BankAccountRepoData implements BankAccountRepoDomain {
         accountName: account.name,
         currency: account.currency,
         currentBalance: account.balance,
-        history:
-            accountHistory.isNotEmpty
-                ? accountHistory
-                : [
-                  AccountHistoryModel(
-                    id: 1,
-                    accountId: account.id,
-                    changeType: ChangeType.creation,
-                    newState: AccountStateModel(
-                      id: account.id,
-                      name: account.name,
-                      balance: account.balance,
-                      currency: account.currency,
-                    ),
-                    changeTimestamp: DateTime.now().toString(),
-                    createdAt: account.createdAt,
+        history: accountHistory.isNotEmpty
+            ? accountHistory
+            : [
+                AccountHistoryModel(
+                  id: 1,
+                  accountId: account.id,
+                  changeType: ChangeType.creation,
+                  newState: AccountStateModel(
+                    id: account.id,
+                    name: account.name,
+                    balance: account.balance,
+                    currency: account.currency,
                   ),
-                ],
+                  changeTimestamp: DateTime.now().toString(),
+                  createdAt: account.createdAt,
+                ),
+              ],
       );
       return response;
     } catch (e) {
@@ -303,7 +303,12 @@ class BankAccountRepoData implements BankAccountRepoDomain {
       );
 
       accounts[index] = account;
-      return account;
+
+      final response = await accountMethods.updateAccount(
+        id,
+        accountUpdateModel,
+      );
+      return response;
     } catch (e) {
       log(e.toString());
       rethrow;

@@ -60,41 +60,55 @@ class TransactionRepoData implements TransactionRepoDomain {
   Future<TransactionModel> createTransaction(
     TransactionRequestModel transactionRequest,
   ) async {
-    try {
-      await Future.delayed(Duration(milliseconds: 200));
-      if (!accountBriefModel.any(
-        (el) => el.id == transactionRequest.accountId,
-      )) {
-        throw Exception();
-      }
-      if (!categoryModel.any((el) => el.id == transactionRequest.categoryId)) {
-        throw Exception();
-      }
+    // try {
+    // if (!accountBriefModel.any(
+    //   (el) => el.id == transactionRequest.accountId,
+    // )) {
+    //   throw Exception();
+    // }
+    // if (!categoryModel.any((el) => el.id == transactionRequest.categoryId)) {
+    //   throw Exception();
+    // }
 
-      final res = await _sqlDatabase.createTransaction(
-        transactionRequest.accountId,
-        transactionRequest.categoryId,
-        transactionRequest.amount,
-        DateTime.now(),
-        DateTime.now().toString(),
-        DateTime.now().toString(),
-      );
+    // final res = await _sqlDatabase.createTransaction(
+    //   transactionRequest.accountId,
+    //   transactionRequest.categoryId,
+    //   transactionRequest.amount,
+    //   DateTime.now(),
+    //   DateTime.now().toString(),
+    //   DateTime.now().toString(),
+    // );
 
-      TransactionModel newTransactionData = TransactionModel(
-        id: transactions.length + 1,
-        accountId: transactionRequest.accountId,
-        categoryId: transactionRequest.categoryId,
-        amount: transactionRequest.amount,
-        transactionDate: transactionRequest.transactionDate,
-        createdAt: DateTime.now().toString(),
-        updatedAt: DateTime.now().toString(),
-      );
-      transactions.add(newTransactionData);
-      return newTransactionData;
-    } catch (e) {
-      log(e.toString());
-      rethrow;
-    }
+    // TransactionModel newTransactionData = TransactionModel(
+    //   id: transactions.length + 1,
+    //   accountId: transactionRequest.accountId,
+    //   categoryId: transactionRequest.categoryId,
+    //   amount: transactionRequest.amount,
+    //   transactionDate: transactionRequest.transactionDate,
+    //   createdAt: DateTime.now().toString(),
+    //   updatedAt: DateTime.now().toString(),
+    // );
+    // transactions.add(newTransactionData);
+
+    final response = await transactionMethods.createTransaction(
+      transactionRequest,
+    );
+    log(response.toString());
+    final responseUpgraded = TransactionModel(
+      id: response.id ?? 1,
+      accountId: response.account?.id ?? 1,
+      categoryId: response.category?.id ?? 1,
+      amount: response.amount ?? '',
+      transactionDate: response.transactionDate ?? '',
+      createdAt: response.createdAt ?? '',
+      updatedAt: response.updatedAt ?? '',
+      comment: response.comment,
+    );
+    return responseUpgraded;
+    // } catch (e) {
+    //   log(e.toString());
+    //   rethrow;
+    // }
   }
 
   // удалить транзакцию
@@ -172,8 +186,8 @@ class TransactionRepoData implements TransactionRepoDomain {
 
       final response = await transactionMethods.getTransaction(id);
       return response.copyWith(
-        account: response.account.copyWith(
-          currency: currencies[response.account.currency] ?? '₽',
+        account: response.account?.copyWith(
+          currency: currencies[response.account?.currency] ?? '₽',
         ),
       );
     } catch (e) {
@@ -200,38 +214,40 @@ class TransactionRepoData implements TransactionRepoDomain {
         endDate: endDate,
       );
 
-      List<TransactionResponseModel> getTransactions = [];
-      for (var record in res) {
-        final acc = await _sqlDatabase.getAccountById(record.accountId);
-        final cat = await _sqlDatabase.getCategoryById(record.categoryId);
-        getTransactions.add(
-          TransactionResponseModel(
-            id: record.id,
-            account: AccountBriefModel(
-              id: acc.id,
-              name: acc.name,
-              balance: acc.balance,
-              currency: acc.currency,
-            ),
-            category: CategoryModel(
-              id: cat.id,
-              name: cat.name,
-              emoji: cat.emoji,
-              isIncome: cat.isIncome,
-            ),
-            amount: record.amount,
-            transactionDate: record.transactionDate.toString(),
-            createdAt: record.createdAt,
-            updatedAt: record.updatedAt,
-          ),
-        );
-      }
+      // List<TransactionResponseModel> getTransactions = [];
+      // for (var record in res) {
+      //   final acc = await _sqlDatabase.getAccountById(record.accountId);
+      //   final cat = await _sqlDatabase.getCategoryById(record.categoryId);
+      //   getTransactions.add(
+      //     TransactionResponseModel(
+      //       id: record.id,
+      //       account: AccountBriefModel(
+      //         id: acc.id,
+      //         name: acc.name,
+      //         balance: acc.balance,
+      //         currency: acc.currency,
+      //       ),
+      //       category: CategoryModel(
+      //         id: cat.id,
+      //         name: cat.name,
+      //         emoji: cat.emoji,
+      //         isIncome: cat.isIncome,
+      //       ),
+      //       amount: record.amount,
+      //       transactionDate: record.transactionDate.toString(),
+      //       createdAt: record.createdAt,
+      //       updatedAt: record.updatedAt,
+      //     ),
+      //   );
+      // }
 
-      final startDateFormatted =
-          startDate != null ? DateFormat('yyyy-MM-dd').format(startDate) : null;
+      final startDateFormatted = startDate != null
+          ? DateFormat('yyyy-MM-dd').format(startDate)
+          : null;
 
-      final endDateFormatted =
-          endDate != null ? DateFormat('yyyy-MM-dd').format(endDate) : null;
+      final endDateFormatted = endDate != null
+          ? DateFormat('yyyy-MM-dd').format(endDate)
+          : null;
 
       final response = await transactionMethods.getTransactionsByPeriod(
         accountId,
@@ -243,8 +259,8 @@ class TransactionRepoData implements TransactionRepoDomain {
       for (var record in response) {
         responseUpgraded.add(
           record.copyWith(
-            account: record.account.copyWith(
-              currency: currencies[record.account.currency] ?? '₽',
+            account: record.account?.copyWith(
+              currency: currencies[record.account?.currency] ?? '₽',
             ),
           ),
         );
@@ -298,18 +314,15 @@ class TransactionRepoData implements TransactionRepoDomain {
     TransactionRequestModel transactionRequest,
   ) async {
     try {
-      await Future.delayed(Duration(milliseconds: 200));
-      if (!transactions.any((el) => el.id == id)) {
-        throw Exception();
-      }
-      if (!accountBriefModel.any(
-        (el) => el.id == transactionRequest.accountId,
-      )) {
-        throw Exception();
-      }
-      if (!categoryModel.any((el) => el.id == transactionRequest.categoryId)) {
-        throw Exception();
-      }
+      // if (!transactions.any((el) => el.id == id)) {
+      //   throw Exception();
+      // }
+      // if (!accountBriefModel.any((el) => el.id == transactionRequest.accountId)) {
+      //   throw Exception();
+      // }
+      // if (!categoryModel.any((el) => el.id == transactionRequest.categoryId)) {
+      //   throw Exception();
+      // }
 
       final res = await _sqlDatabase.updateTransaction(
         id,
@@ -321,30 +334,40 @@ class TransactionRepoData implements TransactionRepoDomain {
         DateTime.now().toString(),
       );
 
-      final index = transactions.indexWhere((el) => el.id == id);
-      final transaction = transactions[index].copyWith(
-        accountId: transactionRequest.accountId,
-        categoryId: transactionRequest.categoryId,
-        amount: transactionRequest.amount,
-        transactionDate: transactionRequest.transactionDate,
-        comment: transactionRequest.comment,
-      );
-      transactions[index] = transaction;
+      // final index = transactions.indexWhere((el) => el.id == id);
+      // final transaction = transactions[index].copyWith(
+      //   accountId: transactionRequest.accountId,
+      //   categoryId: transactionRequest.categoryId,
+      //   amount: transactionRequest.amount,
+      //   transactionDate: transactionRequest.transactionDate,
+      //   comment: transactionRequest.comment,
+      // );
+      // transactions[index] = transaction;
 
-      TransactionResponseModel response = TransactionResponseModel(
-        id: transaction.id,
-        account: accountBriefModel.firstWhere(
-          (el) => el.id == transaction.accountId,
-        ),
-        category: categoryModel.firstWhere(
-          (el) => el.id == transaction.categoryId,
-        ),
-        amount: transaction.amount,
-        transactionDate: transaction.transactionDate,
-        createdAt: transaction.createdAt,
-        updatedAt: transaction.updatedAt,
+      // TransactionResponseModel mockResponse = TransactionResponseModel(
+      //   id: transaction.id,
+      //   account: accountBriefModel.firstWhere(
+      //     (el) => el.id == transaction.accountId,
+      //   ),
+      //   category: categoryModel.firstWhere(
+      //     (el) => el.id == transaction.categoryId,
+      //   ),
+      //   amount: transaction.amount,
+      //   transactionDate: transaction.transactionDate,
+      //   createdAt: transaction.createdAt,
+      //   updatedAt: transaction.updatedAt,
+      // );
+
+      final response = await transactionMethods.updateTransaction(
+        id,
+        transactionRequest,
       );
-      return response;
+      final responseUpgraded = response.copyWith(
+        account: response.account?.copyWith(
+          currency: currencies[response.account?.currency] ?? '₽',
+        ),
+      );
+      return responseUpgraded;
     } catch (e) {
       log(e.toString());
       rethrow;

@@ -4,12 +4,16 @@ import 'dart:math';
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
+import 'package:financial_manager/view/states/account/account_cubit.dart';
 import 'package:financial_manager/view/widgets/f_appbar.dart';
+import 'package:financial_manager/view/widgets/f_error.dart';
 import 'package:financial_manager/view/widgets/f_floating_action_button.dart';
 import 'package:financial_manager/view/widgets/f_list_line.dart';
+import 'package:financial_manager/view/widgets/f_loading.dart';
 import 'package:financial_manager/view/widgets/f_red_button.dart';
 import 'package:financial_manager/view/widgets/f_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:sensors_plus/sensors_plus.dart';
 import 'package:shake/shake.dart';
@@ -54,13 +58,15 @@ class _AccountViewState extends State<AccountView> {
       int index =
           daysBetween(
             startDate ?? DateTime.now().subtract(Duration(days: 30)),
-            DateTime.parse(transaction.transactionDate),
+            DateTime.parse(transaction.transactionDate ?? ''),
           ) -
           1;
-      if (transaction.category.isIncome) {
-        days[index] += double.parse(transaction.amount);
-      } else {
-        days[index] -= double.parse(transaction.amount);
+      if (index >= 0 && index <= 30) {
+        if (transaction.category?.isIncome ?? true) {
+          days[index] += double.parse(transaction.amount ?? '1');
+        } else {
+          days[index] -= double.parse(transaction.amount ?? '1');
+        }
       }
     }
 
@@ -116,6 +122,8 @@ class _AccountViewState extends State<AccountView> {
     endDate ??= startDay.add(Duration(days: 1)).subtract(Duration(seconds: 1));
 
     getTransactions();
+
+    context.read<AccountCubit>().getAccount();
   }
 
   @override
@@ -131,267 +139,309 @@ class _AccountViewState extends State<AccountView> {
     double h = MediaQuery.of(context).size.height;
     double w = MediaQuery.of(context).size.width;
 
-    String accountName =
-        AppLocalizations.of(context)?.accountBalance ?? 'Баланс';
-
     final currencies = [
       [
         AppLocalizations.of(context)?.ruble ?? 'Российский рубль ₽',
         Icons.currency_ruble_outlined,
         '₽',
+        'RUB',
       ],
       [
         AppLocalizations.of(context)?.dollar ?? 'Американский доллар \$',
         Icons.attach_money_outlined,
         '\$',
+        'USD',
       ],
-      [AppLocalizations.of(context)?.euro ?? 'Евро', Icons.euro_outlined, '€'],
+      [
+        AppLocalizations.of(context)?.euro ?? 'Евро',
+        Icons.euro_outlined,
+        '€',
+        'EUR',
+      ],
       [AppLocalizations.of(context)?.cancel ?? 'Отмена', Icons.cancel_outlined],
     ];
 
-    return Scaffold(
-      appBar: FAppbar(
-        title: AppLocalizations.of(context)?.account ?? 'Мой счет',
-        leading: isEditing
-            ? InkWell(
-                onTap: () {
-                  setState(() {
-                    isEditing = !isEditing;
-                    controller.text = '';
-                  });
-                },
-                child: Icon(
-                  Icons.close_outlined,
-                  color: Color.fromRGBO(73, 69, 79, 1),
-                ),
-              )
-            : null,
-        actions: <Widget>[
-          Padding(
-            padding: const EdgeInsets.only(right: 8.0),
-            child: InkWell(
-              onTap: () {
-                setState(() {
-                  if (isEditing && tempName != '') {
-                    accountName = tempName;
-                    tempName = '';
-                    controller.text = '';
-                  }
-                  isEditing = !isEditing;
-                });
-              },
-              child: isEditing
-                  ? Icon(
-                      Icons.check_outlined,
+    return BlocBuilder<AccountCubit, AccountState>(
+      builder: (context, state) => switch (state) {
+        Loading() => FLoading(),
+        CustomError() => FError(message: 'Error'),
+        Content() => Scaffold(
+          appBar: FAppbar(
+            title: AppLocalizations.of(context)?.account ?? 'Мой счет',
+            leading: isEditing
+                ? InkWell(
+                    onTap: () {
+                      setState(() {
+                        isEditing = !isEditing;
+                        controller.text = '';
+                      });
+                    },
+                    child: Icon(
+                      Icons.close_outlined,
                       color: Color.fromRGBO(73, 69, 79, 1),
-                    )
-                  : FSvg(assetName: 'assets/images/edit.svg'),
-            ),
-          ),
-        ],
-      ),
-      body: Column(
-        children: [
-          FListLine(
-            height: h * 0.06,
-            leftPadding: w * 0.04,
-            rightPadding: 0,
-            name: accountName,
-            onNameChanged: (text) {
-              setState(() => tempName = text);
-            },
-            controller: controller,
-            autofocus: true,
-            isEmojiInContainer: true,
-            icon: isEditing
-                ? Icon(
-                    Icons.person_outline,
-                    color: Color.fromRGBO(73, 69, 79, 1),
+                    ),
                   )
                 : null,
-            editName: isEditing ? true : false,
-            emoji: !isEditing ? '💰' : null,
-            emojiBackground: !isEditing ? Colors.white : null,
-            rightSide: Row(
-              children: [
-                Padding(
-                  padding: EdgeInsets.only(right: w * 0.035),
-                  child: showBalance
-                      ? Text('-670 000 ₽')
-                      : SpoilerText(
-                          text: '-670 000 ₽',
-                          config: TextSpoilerConfig(
-                            isEnabled: !showBalance,
-                            enableFadeAnimation: true,
-                            particleColor: Color.fromRGBO(218, 218, 218, 0.498),
-                            textStyle: TextStyle(
-                              fontSize: 15,
-                              color: Colors.black,
-                            ),
-                          ),
-                        ),
+            actions: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(right: 8.0),
+                child: InkWell(
+                  onTap: () {
+                    setState(() {
+                      if (isEditing && tempName != '') {
+                        context.read<AccountCubit>().updateName(
+                          tempName,
+                          state.content.items.first,
+                        );
+                        tempName = '';
+                        controller.text = '';
+                      }
+                      isEditing = !isEditing;
+                    });
+                  },
+                  child: isEditing
+                      ? Icon(
+                          Icons.check_outlined,
+                          color: Color.fromRGBO(73, 69, 79, 1),
+                        )
+                      : FSvg(assetName: 'assets/images/edit.svg'),
                 ),
-                InkWell(
-                  onTap: () {},
-                  child: Container(
-                    height: h * 0.06,
-                    padding: EdgeInsets.only(
-                      right: isEditing ? w * 0.02 : w * 0.04,
-                      left: isEditing ? w * 0.02 : 0,
-                    ),
-                    color: isEditing
-                        ? Color.fromRGBO(228, 105, 98, 1)
-                        : Color.fromRGBO(212, 250, 230, 1),
-                    child: FSvg(
-                      assetName: isEditing
-                          ? 'assets/images/delete.svg'
-                          : 'assets/images/more.svg',
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            backgroundColor: isEditing
-                ? Colors.white
-                : Color.fromRGBO(212, 250, 230, 1),
+              ),
+            ],
           ),
-          Visibility(
-            visible: !isEditing,
-            child: FListLine(
-              height: h * 0.06,
-              leftPadding: 0,
-              rightPadding: w * 0.04,
-              name: AppLocalizations.of(context)?.currency ?? 'Валюта',
-              isEmojiInContainer: true,
-              bottomBorderColor: Colors.transparent,
-              rightSide: InkWell(
-                child: Row(
+          body: Column(
+            children: [
+              FListLine(
+                height: h * 0.06,
+                leftPadding: w * 0.04,
+                rightPadding: 0,
+                name: state.content.items.first.name,
+                onNameChanged: (text) {
+                  setState(() => tempName = text);
+                },
+                controller: controller,
+                autofocus: true,
+                isEmojiInContainer: true,
+                icon: isEditing
+                    ? Icon(
+                        Icons.person_outline,
+                        color: Color.fromRGBO(73, 69, 79, 1),
+                      )
+                    : null,
+                editName: isEditing ? true : false,
+                emoji: !isEditing ? '💰' : null,
+                emojiBackground: !isEditing ? Colors.white : null,
+                rightSide: Row(
                   children: [
                     Padding(
                       padding: EdgeInsets.only(right: w * 0.035),
-                      child: Text(currentCurrency),
-                    ),
-                    FSvg(assetName: 'assets/images/more.svg'),
-                  ],
-                ),
-                onTap: () {
-                  showModalBottomSheet<void>(
-                    context: context,
-                    showDragHandle: true,
-                    useRootNavigator: true,
-                    builder: (BuildContext context) {
-                      return SizedBox(
-                        height: currencies.length * h * 0.08,
-                        child: Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            mainAxisSize: MainAxisSize.min,
-                            children: <Widget>[
-                              Expanded(
-                                child: ListView.builder(
-                                  itemCount: currencies.length,
-                                  itemBuilder: (builder, index) {
-                                    return InkWell(
-                                      onTap: () {
-                                        if (currencies[index][0] ==
-                                            (AppLocalizations.of(
-                                                  context,
-                                                )?.cancel ??
-                                                'Отмена')) {
-                                          Navigator.pop(context);
-                                        } else {
-                                          setState(() {
-                                            currentCurrency =
-                                                currencies[index][2] as String;
-                                          });
-                                          Navigator.pop(context);
-                                        }
-                                      },
-                                      child: FListLine(
-                                        height: h * 0.077,
-                                        leftPadding: w * 0.04,
-                                        rightPadding: w * 0.03,
-                                        name: currencies[index][0] as String,
-                                        isEmojiInContainer: false,
-                                        nameColor:
-                                            currencies[index][0] ==
-                                                (AppLocalizations.of(
-                                                      context,
-                                                    )?.cancel ??
-                                                    'Отмена')
-                                            ? Colors.white
-                                            : null,
-                                        icon: Icon(
-                                          currencies[index][1] as IconData,
-                                          color:
-                                              currencies[index][0] !=
-                                                  (AppLocalizations.of(
-                                                        context,
-                                                      )?.cancel ??
-                                                      'Отмена')
-                                              ? Colors.black
-                                              : Colors.white,
-                                        ),
-                                        rightSide: SizedBox(),
-                                        backgroundColor:
-                                            currencies[index][0] !=
-                                                (AppLocalizations.of(
-                                                      context,
-                                                    )?.cancel ??
-                                                    'Отмена')
-                                            ? Color.fromRGBO(247, 242, 250, 1)
-                                            : Color.fromRGBO(228, 105, 98, 1),
-                                      ),
-                                    );
-                                  },
+                      child: showBalance
+                          ? Text(
+                              '${state.content.items.first.balance.toStringAsFixed(2)} ${state.content.items.first.currency}',
+                            )
+                          : SpoilerText(
+                              text:
+                                  '${state.content.items.first.balance.toStringAsFixed(2)} ${state.content.items.first.currency}',
+                              config: TextSpoilerConfig(
+                                isEnabled: !showBalance,
+                                enableFadeAnimation: true,
+                                particleColor: Color.fromRGBO(
+                                  218,
+                                  218,
+                                  218,
+                                  0.498,
+                                ),
+                                textStyle: TextStyle(
+                                  fontSize: 15,
+                                  color: Colors.black,
                                 ),
                               ),
-                            ],
-                          ),
+                            ),
+                    ),
+                    InkWell(
+                      onTap: () {},
+                      child: Container(
+                        height: h * 0.06,
+                        padding: EdgeInsets.only(
+                          right: isEditing ? w * 0.02 : w * 0.04,
+                          left: isEditing ? w * 0.02 : 0,
                         ),
+                        color: isEditing
+                            ? Color.fromRGBO(228, 105, 98, 1)
+                            : Color.fromRGBO(212, 250, 230, 1),
+                        child: FSvg(
+                          assetName: isEditing
+                              ? 'assets/images/delete.svg'
+                              : 'assets/images/more.svg',
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                backgroundColor: isEditing
+                    ? Colors.white
+                    : Color.fromRGBO(212, 250, 230, 1),
+              ),
+              Visibility(
+                visible: !isEditing,
+                child: FListLine(
+                  height: h * 0.06,
+                  leftPadding: 0,
+                  rightPadding: w * 0.04,
+                  name: AppLocalizations.of(context)?.currency ?? 'Валюта',
+                  isEmojiInContainer: true,
+                  bottomBorderColor: Colors.transparent,
+                  rightSide: InkWell(
+                    child: Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(right: w * 0.035),
+                          child: Text(currentCurrency),
+                        ),
+                        FSvg(assetName: 'assets/images/more.svg'),
+                      ],
+                    ),
+                    onTap: () {
+                      showModalBottomSheet<void>(
+                        context: context,
+                        showDragHandle: true,
+                        useRootNavigator: true,
+                        builder: (BuildContext modalContext) {
+                          return SizedBox(
+                            height: currencies.length * h * 0.08,
+                            child: Center(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Expanded(
+                                    child: ListView.builder(
+                                      itemCount: currencies.length,
+                                      itemBuilder: (builder, index) {
+                                        return InkWell(
+                                          onTap: () {
+                                            if (currencies[index][0] ==
+                                                (AppLocalizations.of(
+                                                      modalContext,
+                                                    )?.cancel ??
+                                                    'Отмена')) {
+                                              Navigator.pop(modalContext);
+                                            } else {
+                                              setState(() {
+                                                currentCurrency =
+                                                    currencies[index][2]
+                                                        as String;
+                                              });
+                                              context
+                                                  .read<AccountCubit>()
+                                                  .setCurrency(
+                                                    currencies[index][3]
+                                                        as String,
+                                                    state.content.items.first,
+                                                  );
+                                              Navigator.pop(modalContext);
+                                            }
+                                          },
+                                          child: FListLine(
+                                            height: h * 0.077,
+                                            leftPadding: w * 0.04,
+                                            rightPadding: w * 0.03,
+                                            name:
+                                                currencies[index][0] as String,
+                                            isEmojiInContainer: false,
+                                            nameColor:
+                                                currencies[index][0] ==
+                                                    (AppLocalizations.of(
+                                                          modalContext,
+                                                        )?.cancel ??
+                                                        'Отмена')
+                                                ? Colors.white
+                                                : null,
+                                            icon: Icon(
+                                              currencies[index][1] as IconData,
+                                              color:
+                                                  currencies[index][0] !=
+                                                      (AppLocalizations.of(
+                                                            modalContext,
+                                                          )?.cancel ??
+                                                          'Отмена')
+                                                  ? Colors.black
+                                                  : Colors.white,
+                                            ),
+                                            rightSide: SizedBox(),
+                                            backgroundColor:
+                                                currencies[index][0] !=
+                                                    (AppLocalizations.of(
+                                                          modalContext,
+                                                        )?.cancel ??
+                                                        'Отмена')
+                                                ? Color.fromRGBO(
+                                                    247,
+                                                    242,
+                                                    250,
+                                                    1,
+                                                  )
+                                                : Color.fromRGBO(
+                                                    228,
+                                                    105,
+                                                    98,
+                                                    1,
+                                                  ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
                       );
                     },
-                  );
-                },
+                  ),
+                  backgroundColor: Color.fromRGBO(212, 250, 230, 1),
+                ),
               ),
-              backgroundColor: Color.fromRGBO(212, 250, 230, 1),
-            ),
-          ),
-          Visibility(
-            visible: !isEditing,
-            child: Padding(
-              padding: EdgeInsets.only(top: h * 0.04),
-              child: SizedBox(
-                height: h * 0.3,
-                width: w * 0.95,
-                child: BarChart(
-                  BarChartData(
-                    barTouchData: barTouchData,
-                    titlesData: titlesData,
-                    borderData: borderData,
-                    barGroups: barGroups,
-                    gridData: const FlGridData(show: false),
-                    alignment: BarChartAlignment.spaceAround,
-                    maxY: days.reduce(max),
+              Visibility(
+                visible: !isEditing,
+                child: Padding(
+                  padding: EdgeInsets.only(top: h * 0.04),
+                  child: SizedBox(
+                    height: h * 0.3,
+                    width: w * 0.95,
+                    child: BarChart(
+                      BarChartData(
+                        barTouchData: barTouchData,
+                        titlesData: titlesData,
+                        borderData: borderData,
+                        barGroups: barGroups,
+                        gridData: const FlGridData(show: false),
+                        alignment: BarChartAlignment.spaceAround,
+                        maxY: days.reduce(max),
+                      ),
+                    ),
                   ),
                 ),
               ),
-            ),
+              Visibility(
+                visible: isEditing,
+                child: FRedButton(
+                  onPressed: () {},
+                  width: w * 0.92,
+                  height: h * 0.044,
+                  topPadding: h * 0.036,
+                  name:
+                      AppLocalizations.of(context)?.deleteAccount ??
+                      'Удалить счет',
+                ),
+              ),
+            ],
           ),
-          Visibility(
-            visible: isEditing,
-            child: FRedButton(
-              onPressed: () {},
-              width: w * 0.92,
-              height: h * 0.044,
-              topPadding: h * 0.036,
-              name:
-                  AppLocalizations.of(context)?.deleteAccount ?? 'Удалить счет',
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FFloatingActionButton(onPressed: () {}),
+          floatingActionButton: FFloatingActionButton(onPressed: () {}),
+        ),
+        _ => FLoading(),
+      },
     );
   }
 

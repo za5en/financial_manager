@@ -8,14 +8,14 @@ part 'transaction_response_model.g.dart';
 @freezed
 abstract class TransactionResponseModel with _$TransactionResponseModel {
   const factory TransactionResponseModel({
-    required int id,
-    required AccountBriefModel account,
-    required CategoryModel category,
-    required String amount,
-    required String transactionDate,
+    int? id,
+    AccountBriefModel? account,
+    CategoryModel? category,
+    String? amount,
+    String? transactionDate,
     String? comment,
-    required String createdAt,
-    required String updatedAt,
+    String? createdAt,
+    String? updatedAt,
   }) = _TransactionResponseModel;
 
   factory TransactionResponseModel.fromJson(Map<String, Object?> json) =>

@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:dio/dio.dart';
+import 'package:financial_manager/data/models/transaction/transaction_request_model.dart';
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:retrofit/retrofit.dart';
 
@@ -17,4 +20,18 @@ abstract class TransactionMethods {
 
   @GET('/transactions/{id}')
   Future<TransactionResponseModel> getTransaction(@Path('id') int id);
+
+  @POST('/transactions')
+  Future<TransactionResponseModel> createTransaction(
+    @Body() TransactionRequestModel transactionRequest,
+  );
+
+  @PUT('/transactions/{id}')
+  Future<TransactionResponseModel> updateTransaction(
+    @Path('id') int id,
+    @Body() TransactionRequestModel transactionRequest,
+  );
+
+  @DELETE('/transactions/{id}')
+  Future<HttpResponse> deleteTransaction(@Path('id') int id);
 }

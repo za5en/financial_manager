@@ -9,14 +9,18 @@ part of 'transaction_response_model.dart';
 _TransactionResponseModel _$TransactionResponseModelFromJson(
   Map<String, dynamic> json,
 ) => _TransactionResponseModel(
-  id: (json['id'] as num).toInt(),
-  account: AccountBriefModel.fromJson(json['account'] as Map<String, dynamic>),
-  category: CategoryModel.fromJson(json['category'] as Map<String, dynamic>),
-  amount: json['amount'] as String,
-  transactionDate: json['transactionDate'] as String,
+  id: (json['id'] as num?)?.toInt(),
+  account: json['account'] == null
+      ? null
+      : AccountBriefModel.fromJson(json['account'] as Map<String, dynamic>),
+  category: json['category'] == null
+      ? null
+      : CategoryModel.fromJson(json['category'] as Map<String, dynamic>),
+  amount: json['amount'] as String?,
+  transactionDate: json['transactionDate'] as String?,
   comment: json['comment'] as String?,
-  createdAt: json['createdAt'] as String,
-  updatedAt: json['updatedAt'] as String,
+  createdAt: json['createdAt'] as String?,
+  updatedAt: json['updatedAt'] as String?,
 );
 
 Map<String, dynamic> _$TransactionResponseModelToJson(

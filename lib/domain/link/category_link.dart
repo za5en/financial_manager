@@ -8,7 +8,7 @@ class CategoryLink {
 
   final categoryRepoData = CategoryRepoData();
 
-  Future<List<CategoryModel>> makeRequest() async {
+  Future<List<CategoryModel>> getCategories() async {
     try {
       final request = await categoryRepoData.getCategories();
       return request;
