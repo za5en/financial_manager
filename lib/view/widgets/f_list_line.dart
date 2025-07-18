@@ -82,25 +82,24 @@ class _FListLineState extends State<FListLine> {
                   children: [
                     Visibility(
                       visible: widget.emoji != null,
-                      child:
-                          widget.isEmojiInContainer
-                              ? Container(
-                                height: h * 0.026,
-                                width: w * 0.058,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(15),
-                                  color:
-                                      widget.emojiBackground ??
-                                      Color.fromRGBO(212, 250, 230, 1),
+                      child: widget.isEmojiInContainer
+                          ? Container(
+                              height: h * 0.026,
+                              width: w * 0.058,
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(15),
+                                color:
+                                    widget.emojiBackground ??
+                                    Color.fromRGBO(212, 250, 230, 1),
+                              ),
+                              child: Center(
+                                child: Text(
+                                  widget.emoji ?? '',
+                                  style: widget.emojiTextStyle,
                                 ),
-                                child: Center(
-                                  child: Text(
-                                    widget.emoji ?? '',
-                                    style: widget.emojiTextStyle,
-                                  ),
-                                ),
-                              )
-                              : Center(child: widget.svgIcon),
+                              ),
+                            )
+                          : Center(child: widget.svgIcon),
                     ),
                     Visibility(
                       visible: widget.icon != null,
@@ -111,56 +110,80 @@ class _FListLineState extends State<FListLine> {
               ),
               widget.description != null
                   ? Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        widget.name,
-                        style: TextStyle(color: widget.nameColor),
-                      ),
-                      SizedBox(
-                        width: w * 0.4,
-                        child: Text(
-                          widget.description ?? '',
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          widget.name,
                           style: TextStyle(
-                            color: Color.fromRGBO(73, 69, 79, 1),
-                            fontSize: 12,
+                            color:
+                                widget.nameColor ??
+                                Theme.of(
+                                  context,
+                                ).primaryTextTheme.bodyMedium?.color ??
+                                Color(0xFF1C1C22),
                           ),
-                          overflow: TextOverflow.ellipsis,
-                          softWrap: true,
                         ),
-                      ),
-                    ],
-                  )
+                        SizedBox(
+                          width: w * 0.4,
+                          child: Text(
+                            widget.description ?? '',
+                            style: TextStyle(
+                              color: Color.fromRGBO(73, 69, 79, 1),
+                              fontSize: 12,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                            softWrap: true,
+                          ),
+                        ),
+                      ],
+                    )
                   : widget.editName == true
                   ? SizedBox(
-                    width: widget.width ?? w * 0.45,
-                    child: TextFormField(
-                      controller: widget.controller,
-                      autofocus: widget.autofocus ?? false,
-                      onTapOutside: (event) => FocusScope.of(context).unfocus(),
-                      onChanged: (value) => widget.onNameChanged!(value),
-                      maxLines: 1,
-                      style: TextStyle(fontSize: 14),
-                      textAlignVertical: TextAlignVertical.center,
-                      decoration: InputDecoration(
-                        contentPadding: EdgeInsets.all(0.0),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
+                      width: widget.width ?? w * 0.45,
+                      child: TextFormField(
+                        controller: widget.controller,
+                        autofocus: widget.autofocus ?? false,
+                        onTapOutside: (event) =>
+                            FocusScope.of(context).unfocus(),
+                        onChanged: (value) => widget.onNameChanged!(value),
+                        maxLines: 1,
+                        style: TextStyle(
+                          fontSize: 14,
+                          color:
+                              Theme.of(
+                                context,
+                              ).primaryTextTheme.bodyMedium?.color ??
+                              Color(0xFF1C1C22),
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide.none,
+                        textAlignVertical: TextAlignVertical.center,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.all(0.0),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide.none,
+                          ),
+                          hintText: widget.hint ?? widget.name,
+                          hintStyle: TextStyle(fontSize: 14),
                         ),
-                        border: OutlineInputBorder(borderSide: BorderSide.none),
-                        hintText: widget.hint ?? widget.name,
-                        hintStyle: TextStyle(fontSize: 14),
+                      ),
+                    )
+                  : Text(
+                      widget.name,
+                      style: TextStyle(
+                        color:
+                            widget.nameColor ??
+                            Theme.of(
+                              context,
+                            ).primaryTextTheme.bodyMedium?.color ??
+                            Color(0xFF1C1C22),
                       ),
                     ),
-                  )
-                  : Text(
-                    widget.name,
-                    style: TextStyle(color: widget.nameColor),
-                  ),
             ],
           ),
           widget.rightSide,
