@@ -41,15 +41,15 @@ class TransactionLink {
   Future<TransactionModel> createTransaction(
     TransactionRequestModel transactionRequest,
   ) async {
-    // try {
-    final request = await transactionRepoData.createTransaction(
-      transactionRequest,
-    );
-    return request;
-    // } catch (e) {
-    //   log(e.toString());
-    //   rethrow;
-    // }
+    try {
+      final request = await transactionRepoData.createTransaction(
+        transactionRequest,
+      );
+      return request;
+    } catch (e) {
+      log(e.toString());
+      rethrow;
+    }
   }
 
   Future<TransactionResponseModel> updateTransaction(
