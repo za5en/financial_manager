@@ -1,5 +1,7 @@
 class SettingsViewModel {
-  SettingsViewModel._();
+  final bool canAuthenticate;
+  SettingsViewModel._({required this.canAuthenticate});
 
-  factory SettingsViewModel.buildWith() => SettingsViewModel._();
+  factory SettingsViewModel.buildWith(canAuthenticate) =>
+      SettingsViewModel._(canAuthenticate: canAuthenticate);
 }
