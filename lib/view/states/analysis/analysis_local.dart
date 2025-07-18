@@ -16,7 +16,7 @@ class TransactionCategoryLocal {
   final double proportion;
   final double amount;
   final String currency;
-  final List<TrancactionLocal> expenseItems;
+  final List<TransactionLocal> expenseItems;
 
   TransactionCategoryLocal._({
     required this.id,
@@ -37,7 +37,7 @@ class TransactionCategoryLocal {
     double proportion,
     double amount,
     String currency,
-    List<TrancactionLocal> expenseItems,
+    List<TransactionLocal> expenseItems,
   ) => TransactionCategoryLocal._(
     id: id,
     emoji: emoji,
@@ -50,16 +50,16 @@ class TransactionCategoryLocal {
   );
 }
 
-class TrancactionLocal {
+class TransactionLocal {
   final int id;
   final String emoji;
   final String category;
   final String? comment;
-  final int amount;
+  final double amount;
   final String currency;
   final DateTime transactionDate;
 
-  TrancactionLocal._({
+  TransactionLocal._({
     required this.id,
     required this.emoji,
     required this.category,
@@ -69,15 +69,15 @@ class TrancactionLocal {
     required this.transactionDate,
   });
 
-  factory TrancactionLocal.buildWith(
+  factory TransactionLocal.buildWith(
     int id,
     String emoji,
     String category,
     String? comment,
-    int amount,
+    double amount,
     String currency,
     DateTime transactionDate,
-  ) => TrancactionLocal._(
+  ) => TransactionLocal._(
     id: id,
     emoji: emoji,
     category: category,
