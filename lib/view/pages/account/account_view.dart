@@ -49,7 +49,7 @@ class _AccountViewState extends State<AccountView> {
     final accountTransactions = AccountTransactions();
 
     final response = await accountTransactions.getTransactionsByPeriod(
-      1,
+      134,
       startDate,
       endDate,
     );
@@ -70,9 +70,11 @@ class _AccountViewState extends State<AccountView> {
       }
     }
 
-    setState(() {
-      transactions = response;
-    });
+    if (mounted) {
+      setState(() {
+        transactions = response;
+      });
+    }
   }
 
   int daysBetween(DateTime from, DateTime to) {
@@ -216,6 +218,7 @@ class _AccountViewState extends State<AccountView> {
                 leftPadding: w * 0.04,
                 rightPadding: 0,
                 name: state.content.items.first.name,
+                nameColor: Color(0xFF1C1C22),
                 onNameChanged: (text) {
                   setState(() => tempName = text);
                 },
@@ -238,6 +241,15 @@ class _AccountViewState extends State<AccountView> {
                       child: showBalance
                           ? Text(
                               '${state.content.items.first.balance.toStringAsFixed(2)} ${state.content.items.first.currency}',
+                              style: TextStyle(
+                                color: isEditing
+                                    ? Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyMedium
+                                              ?.color ??
+                                          Color(0xFF1C1C22)
+                                    : Color(0xFF1C1C22),
+                              ),
                             )
                           : SpoilerText(
                               text:
@@ -253,7 +265,13 @@ class _AccountViewState extends State<AccountView> {
                                 ),
                                 textStyle: TextStyle(
                                   fontSize: 15,
-                                  color: Colors.black,
+                                  color: isEditing
+                                      ? Theme.of(context)
+                                                .primaryTextTheme
+                                                .bodyMedium
+                                                ?.color ??
+                                            Color(0xFF1C1C22)
+                                      : Color(0xFF1C1C22),
                                 ),
                               ),
                             ),
@@ -279,7 +297,7 @@ class _AccountViewState extends State<AccountView> {
                   ],
                 ),
                 backgroundColor: isEditing
-                    ? Colors.white
+                    ? Theme.of(context).scaffoldBackgroundColor
                     : Color.fromRGBO(212, 250, 230, 1),
               ),
               Visibility(
@@ -289,6 +307,7 @@ class _AccountViewState extends State<AccountView> {
                   leftPadding: 0,
                   rightPadding: w * 0.04,
                   name: AppLocalizations.of(context)?.currency ?? 'Валюта',
+                  nameColor: Color(0xFF1C1C22),
                   isEmojiInContainer: true,
                   bottomBorderColor: Colors.transparent,
                   rightSide: InkWell(
@@ -303,6 +322,9 @@ class _AccountViewState extends State<AccountView> {
                     ),
                     onTap: () {
                       showModalBottomSheet<void>(
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                         context: context,
                         showDragHandle: true,
                         useRootNavigator: true,
@@ -365,7 +387,11 @@ class _AccountViewState extends State<AccountView> {
                                                             modalContext,
                                                           )?.cancel ??
                                                           'Отмена')
-                                                  ? Colors.black
+                                                  ? Theme.of(context)
+                                                            .primaryTextTheme
+                                                            .bodyMedium
+                                                            ?.color ??
+                                                        Color(0xFF1C1C22)
                                                   : Colors.white,
                                             ),
                                             rightSide: SizedBox(),
@@ -375,12 +401,9 @@ class _AccountViewState extends State<AccountView> {
                                                           modalContext,
                                                         )?.cancel ??
                                                         'Отмена')
-                                                ? Color.fromRGBO(
-                                                    247,
-                                                    242,
-                                                    250,
-                                                    1,
-                                                  )
+                                                ? Theme.of(
+                                                    context,
+                                                  ).scaffoldBackgroundColor
                                                 : Color.fromRGBO(
                                                     228,
                                                     105,
@@ -462,8 +485,10 @@ class _AccountViewState extends State<AccountView> {
               rod.toY == 1
                   ? '0 $currentCurrency'
                   : '${rod.toY.toStringAsFixed(2)} $currentCurrency',
-              const TextStyle(
-                color: Colors.black,
+              TextStyle(
+                color:
+                    Theme.of(context).primaryTextTheme.bodyMedium?.color ??
+                    Color(0xFF1C1C22),
                 fontWeight: FontWeight.bold,
                 fontSize: 12,
               ),
@@ -474,7 +499,9 @@ class _AccountViewState extends State<AccountView> {
 
   Widget getTitles(double value, TitleMeta meta) {
     final style = TextStyle(
-      color: Colors.black,
+      color:
+          Theme.of(context).primaryTextTheme.bodyMedium?.color ??
+          Color(0xFF1C1C22),
       fontWeight: FontWeight.w400,
       fontSize: 12,
     );

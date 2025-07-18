@@ -40,14 +40,19 @@ class _AnalysisCategoryViewState extends State<AnalysisCategoryView> {
     return Scaffold(
       appBar: FAppbar(
         title: widget.categoryName,
-        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: Padding(
           padding: EdgeInsets.all(h * 0.02),
           child: InkWell(
             onTap: () {
               Navigator.pop(context);
             },
-            child: FSvg(assetName: 'assets/images/back_arrow.svg'),
+            child: FSvg(
+              assetName: 'assets/images/back_arrow.svg',
+              color:
+                  Theme.of(context).primaryTextTheme.bodyMedium?.color ??
+                  Color(0xFF1C1C22),
+            ),
           ),
         ),
       ),
@@ -60,8 +65,15 @@ class _AnalysisCategoryViewState extends State<AnalysisCategoryView> {
             name:
                 '${AppLocalizations.of(context)?.period ?? 'Период'}: ${AppLocalizations.of(context)?.historyStart.toLowerCase() ?? 'конец'}',
             isEmojiInContainer: true,
-            rightSide: Text(widget.startDate),
-            backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+            rightSide: Text(
+              widget.startDate,
+              style: TextStyle(
+                color:
+                    Theme.of(context).primaryTextTheme.bodyMedium?.color ??
+                    Color(0xFF1C1C22),
+              ),
+            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
           FListLine(
             height: h * 0.063,
@@ -70,16 +82,30 @@ class _AnalysisCategoryViewState extends State<AnalysisCategoryView> {
             name:
                 '${AppLocalizations.of(context)?.period ?? 'Период'}: ${AppLocalizations.of(context)?.historyEnd.toLowerCase() ?? 'конец'}',
             isEmojiInContainer: true,
-            rightSide: Text(widget.endDate),
-            backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+            rightSide: Text(
+              widget.endDate,
+              style: TextStyle(
+                color:
+                    Theme.of(context).primaryTextTheme.bodyMedium?.color ??
+                    Color(0xFF1C1C22),
+              ),
+            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           ),
           FListLine(
             height: h * 0.06,
             leftPadding: w * 0.04,
             rightPadding: w * 0.04,
             name: AppLocalizations.of(context)?.historySum ?? 'Сумма',
-            rightSide: Text('${widget.sum} ${widget.currency}'),
-            backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+            rightSide: Text(
+              '${widget.sum} ${widget.currency}',
+              style: TextStyle(
+                color:
+                    Theme.of(context).primaryTextTheme.bodyMedium?.color ??
+                    Color(0xFF1C1C22),
+              ),
+            ),
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             isEmojiInContainer: true,
           ),
           Expanded(
@@ -105,6 +131,13 @@ class _AnalysisCategoryViewState extends State<AnalysisCategoryView> {
                           children: [
                             Text(
                               '${widget.transactions[index].amount} ${widget.transactions[index].account?.currency}',
+                              style: TextStyle(
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).primaryTextTheme.bodyMedium?.color ??
+                                    Color(0xFF1C1C22),
+                              ),
                             ),
                             Text(
                               DateFormat('dd.MM.yyyy HH:mm').format(
@@ -113,13 +146,20 @@ class _AnalysisCategoryViewState extends State<AnalysisCategoryView> {
                                       '',
                                 ),
                               ),
+                              style: TextStyle(
+                                color:
+                                    Theme.of(
+                                      context,
+                                    ).primaryTextTheme.bodyMedium?.color ??
+                                    Color(0xFF1C1C22),
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                  backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                  backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 );
               },
             ),

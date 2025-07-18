@@ -124,10 +124,12 @@ class _HistoryViewState extends State<HistoryView> {
 
     countSum(response);
 
-    setState(() {
-      transactions = response;
-      updateSort(selectedSort);
-    });
+    if (mounted) {
+      setState(() {
+        transactions = response;
+        updateSort(selectedSort);
+      });
+    }
   }
 
   void countSum(transactions) {
@@ -136,9 +138,11 @@ class _HistoryViewState extends State<HistoryView> {
       localSum += double.parse(transaction.amount);
     }
 
-    setState(() {
-      sum = localSum;
-    });
+    if (mounted) {
+      setState(() {
+        sum = localSum;
+      });
+    }
   }
 
   void updateSort(String? sortType) {
@@ -244,6 +248,7 @@ class _HistoryViewState extends State<HistoryView> {
                 leftPadding: w * 0.04,
                 rightPadding: w * 0.04,
                 name: AppLocalizations.of(context)?.historyStart ?? 'Начало',
+                nameColor: Color(0xFF1C1C22),
                 isEmojiInContainer: true,
                 rightSide: InkWell(
                   onTap: () {
@@ -262,6 +267,7 @@ class _HistoryViewState extends State<HistoryView> {
                 leftPadding: w * 0.04,
                 rightPadding: w * 0.04,
                 name: AppLocalizations.of(context)?.historyEnd ?? 'Конец',
+                nameColor: Color(0xFF1C1C22),
                 isEmojiInContainer: true,
                 rightSide: InkWell(
                   onTap: () {
@@ -278,6 +284,7 @@ class _HistoryViewState extends State<HistoryView> {
                 leftPadding: w * 0.04,
                 rightPadding: w * 0.04,
                 name: AppLocalizations.of(context)?.historySort ?? 'Сортировка',
+                nameColor: Color(0xFF1C1C22),
                 isEmojiInContainer: true,
                 rightSide: DropdownButton<String>(
                   items: sortOptions.map<DropdownMenuItem<String>>((
@@ -306,6 +313,7 @@ class _HistoryViewState extends State<HistoryView> {
                 leftPadding: w * 0.04,
                 rightPadding: w * 0.04,
                 name: AppLocalizations.of(context)?.historySum ?? 'Сумма',
+                nameColor: Color(0xFF1C1C22),
                 rightSide: transactions.isNotEmpty
                     ? Text('$sum ${transactions[0].account?.currency}')
                     : Text('$sum ₽'),
@@ -381,6 +389,14 @@ class _HistoryViewState extends State<HistoryView> {
                                 children: [
                                   Text(
                                     '${transactions[index].amount} ${transactions[index].account?.currency}',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyMedium
+                                              ?.color ??
+                                          Color(0xFF1C1C22),
+                                    ),
                                   ),
                                   Text(
                                     DateFormat('dd.MM.yyyy HH:mm').format(
@@ -389,6 +405,14 @@ class _HistoryViewState extends State<HistoryView> {
                                             '',
                                       ),
                                     ),
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyMedium
+                                              ?.color ??
+                                          Color(0xFF1C1C22),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -396,7 +420,9 @@ class _HistoryViewState extends State<HistoryView> {
                             FSvg(assetName: 'assets/images/more.svg'),
                           ],
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                       ),
                     );
                   },

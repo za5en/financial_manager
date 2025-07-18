@@ -73,19 +73,23 @@ class _ManageViewState extends State<ManageView> {
   String? selectedAccount;
 
   void changeAccount(String? account) {
-    setState(() {
-      selectedAccount = account ?? 'Сбербанк';
-      isChanged = true;
-    });
+    if (mounted) {
+      setState(() {
+        selectedAccount = account ?? 'Сбербанк';
+        isChanged = true;
+      });
+    }
   }
 
   String? selectedArticle;
 
   void changeArticle(String? article) {
-    setState(() {
-      selectedArticle = article ?? 'Ремонт';
-      isChanged = true;
-    });
+    if (mounted) {
+      setState(() {
+        selectedArticle = article ?? 'Ремонт';
+        isChanged = true;
+      });
+    }
   }
 
   Future<void> _selectDate() async {
@@ -102,10 +106,12 @@ class _ManageViewState extends State<ManageView> {
     );
 
     if (pickedDate != null) {
-      setState(() {
-        transactionDate = pickedDate;
-        isChanged = true;
-      });
+      if (mounted) {
+        setState(() {
+          transactionDate = pickedDate;
+          isChanged = true;
+        });
+      }
     }
   }
 
@@ -126,40 +132,44 @@ class _ManageViewState extends State<ManageView> {
     );
 
     if (pickedTime != null) {
-      setState(() {
-        transactionTime = pickedTime;
-        isChanged = true;
-      });
+      if (mounted) {
+        setState(() {
+          transactionTime = pickedTime;
+          isChanged = true;
+        });
+      }
     }
   }
 
   void getTransactionInfo() async {
-    setState(() {
-      selectedAccount = widget.transaction?.account?.name ?? 'Account';
-      if (!accounts
-          .map((item) => item.name)
-          .contains(widget.transaction?.account?.name)) {
-        accounts.add(
-          AccountModel(
-            id: widget.transaction?.account?.id ?? 1,
-            userId: 1,
-            name: widget.transaction?.account?.name ?? 'Account',
-            balance: widget.transaction?.account?.balance ?? '1000',
-            currency: currency,
-            createdAt: DateTime.now().toString(),
-            updatedAt: DateTime.now().toString(),
-          ),
+    if (mounted) {
+      setState(() {
+        selectedAccount = widget.transaction?.account?.name ?? 'Account';
+        if (!accounts
+            .map((item) => item.name)
+            .contains(widget.transaction?.account?.name)) {
+          accounts.add(
+            AccountModel(
+              id: widget.transaction?.account?.id ?? 1,
+              userId: 1,
+              name: widget.transaction?.account?.name ?? 'Account',
+              balance: widget.transaction?.account?.balance ?? '1000',
+              currency: currency,
+              createdAt: DateTime.now().toString(),
+              updatedAt: DateTime.now().toString(),
+            ),
+          );
+        }
+        selectedArticle = widget.transaction?.category?.name ?? '';
+        sumController.text = widget.transaction?.amount ?? '25270';
+        currency = widget.transaction?.account?.currency ?? '₽';
+        transactionDate = DateTime.parse(
+          widget.transaction?.transactionDate ?? '2025-05-07 12:35',
         );
-      }
-      selectedArticle = widget.transaction?.category?.name ?? '';
-      sumController.text = widget.transaction?.amount ?? '25270';
-      currency = widget.transaction?.account?.currency ?? '₽';
-      transactionDate = DateTime.parse(
-        widget.transaction?.transactionDate ?? '2025-05-07 12:35',
-      );
-      transactionTime = TimeOfDay.fromDateTime(transactionDate);
-      descController.text = widget.transaction?.comment ?? '';
-    });
+        transactionTime = TimeOfDay.fromDateTime(transactionDate);
+        descController.text = widget.transaction?.comment ?? '';
+      });
+    }
   }
 
   @override
@@ -366,31 +376,44 @@ class _ManageViewState extends State<ManageView> {
                         rightPadding: w * 0.02,
                         name:
                             AppLocalizations.of(context)?.accountName ?? 'Счет',
-                        rightSide: DropdownButton<String>(
-                          items: List.generate(
-                            state.content!.account.length,
-                            (index) => DropdownMenuItem(
-                              value: state.content!.account[index].name,
-                              child: Text(state.content!.account[index].name),
+                        rightSide: Theme(
+                          data: Theme.of(context).copyWith(
+                            canvasColor: Theme.of(
+                              context,
+                            ).navigationBarTheme.backgroundColor,
+                          ),
+                          child: DropdownButton<String>(
+                            items: List.generate(
+                              state.content!.account.length,
+                              (index) => DropdownMenuItem(
+                                value: state.content!.account[index].name,
+                                child: Text(state.content!.account[index].name),
+                              ),
+                            ),
+                            value: selectedAccount,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).primaryTextTheme.bodyMedium?.color ??
+                                  Color(0xFF1C1C22),
+                              letterSpacing: 0.2,
+                            ),
+                            alignment: Alignment.centerRight,
+                            onChanged: changeAccount,
+                            underline: Container(height: 0),
+                            borderRadius: BorderRadius.circular(15),
+                            icon: Padding(
+                              padding: EdgeInsets.only(left: w * 0.035),
+                              child: FSvg(assetName: 'assets/images/more.svg'),
                             ),
                           ),
-                          value: selectedAccount,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                            letterSpacing: 0.2,
-                          ),
-                          alignment: Alignment.centerRight,
-                          onChanged: changeAccount,
-                          underline: Container(height: 0),
-                          borderRadius: BorderRadius.circular(15),
-                          icon: Padding(
-                            padding: EdgeInsets.only(left: w * 0.035),
-                            child: FSvg(assetName: 'assets/images/more.svg'),
-                          ),
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                         isEmojiInContainer: true,
                       ),
                       // статья
@@ -401,33 +424,46 @@ class _ManageViewState extends State<ManageView> {
                         name:
                             AppLocalizations.of(context)?.articleName ??
                             'Статья',
-                        rightSide: DropdownButton<String>(
-                          items: List.generate(
-                            state.content!.categories.length,
-                            (index) => DropdownMenuItem(
-                              value: state.content!.categories[index].name,
-                              child: Text(
-                                state.content!.categories[index].name,
+                        rightSide: Theme(
+                          data: Theme.of(context).copyWith(
+                            canvasColor: Theme.of(
+                              context,
+                            ).navigationBarTheme.backgroundColor,
+                          ),
+                          child: DropdownButton<String>(
+                            items: List.generate(
+                              state.content!.categories.length,
+                              (index) => DropdownMenuItem(
+                                value: state.content!.categories[index].name,
+                                child: Text(
+                                  state.content!.categories[index].name,
+                                ),
                               ),
                             ),
-                          ),
-                          value: selectedArticle,
-                          style: TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Colors.black,
-                            letterSpacing: 0.2,
-                          ),
-                          alignment: Alignment.centerRight,
-                          onChanged: changeArticle,
-                          underline: Container(height: 0),
-                          borderRadius: BorderRadius.circular(15),
-                          icon: Padding(
-                            padding: EdgeInsets.only(left: w * 0.035),
-                            child: FSvg(assetName: 'assets/images/more.svg'),
+                            value: selectedArticle,
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).primaryTextTheme.bodyMedium?.color ??
+                                  Color(0xFF1C1C22),
+                              letterSpacing: 0.2,
+                            ),
+                            alignment: Alignment.centerRight,
+                            onChanged: changeArticle,
+                            underline: Container(height: 0),
+                            borderRadius: BorderRadius.circular(15),
+                            icon: Padding(
+                              padding: EdgeInsets.only(left: w * 0.035),
+                              child: FSvg(assetName: 'assets/images/more.svg'),
+                            ),
                           ),
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                         isEmojiInContainer: true,
                       ),
                       // сумма
@@ -447,7 +483,14 @@ class _ManageViewState extends State<ManageView> {
                               });
                             },
                             textAlign: TextAlign.end,
-                            style: TextStyle(fontSize: 14),
+                            style: TextStyle(
+                              fontSize: 14,
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).primaryTextTheme.bodyMedium?.color ??
+                                  Color(0xFF1C1C22),
+                            ),
                             keyboardType: TextInputType.number,
                             inputFormatters: [
                               FilteringTextInputFormatter.allow(
@@ -471,7 +514,17 @@ class _ManageViewState extends State<ManageView> {
                                   widthFactor: 1.0,
                                   heightFactor: 1.0,
                                   alignment: Alignment.centerRight,
-                                  child: Text(currency),
+                                  child: Text(
+                                    currency,
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyMedium
+                                              ?.color ??
+                                          Color(0xFF1C1C22),
+                                    ),
+                                  ),
                                 ),
                               ),
                               hintText:
@@ -482,7 +535,9 @@ class _ManageViewState extends State<ManageView> {
                                 FocusScope.of(context).unfocus(),
                           ),
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                         isEmojiInContainer: true,
                       ),
                       // дата
@@ -497,9 +552,18 @@ class _ManageViewState extends State<ManageView> {
                           },
                           child: Text(
                             DateFormat('dd.MM.yyyy').format(transactionDate),
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).primaryTextTheme.bodyMedium?.color ??
+                                  Color(0xFF1C1C22),
+                            ),
                           ),
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                         isEmojiInContainer: true,
                       ),
                       // время
@@ -514,9 +578,18 @@ class _ManageViewState extends State<ManageView> {
                           },
                           child: Text(
                             '${transactionTime.hour.toString()}:${transactionTime.minute < 10 ? '0${transactionTime.minute}' : transactionTime.minute.toString()}',
+                            style: TextStyle(
+                              color:
+                                  Theme.of(
+                                    context,
+                                  ).primaryTextTheme.bodyMedium?.color ??
+                                  Color(0xFF1C1C22),
+                            ),
                           ),
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                         isEmojiInContainer: true,
                       ),
                       // комментарий
@@ -541,9 +614,12 @@ class _ManageViewState extends State<ManageView> {
                             AppLocalizations.of(context)?.comment ??
                             'Комментарий',
                         rightSide: SizedBox(),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                         isEmojiInContainer: true,
                       ),
+                      // кнопка удаления
                       Visibility(
                         visible: widget.isEditMode,
                         child: FRedButton(

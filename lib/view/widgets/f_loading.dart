@@ -1,3 +1,4 @@
+import 'package:financial_manager/view/resources/theme/main_color.dart';
 import 'package:flutter/material.dart';
 
 class FLoading extends StatelessWidget {
@@ -5,8 +6,15 @@ class FLoading extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: CircularProgressIndicator(color: Color.fromRGBO(42, 232, 129, 1)),
+    return Scaffold(
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: Center(
+        child: ValueListenableBuilder(
+          valueListenable: MainColor.color,
+          builder: (context, value, child) =>
+              CircularProgressIndicator(color: Color(value)),
+        ),
+      ),
     );
   }
 }
