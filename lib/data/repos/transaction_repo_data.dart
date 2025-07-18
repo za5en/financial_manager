@@ -9,7 +9,7 @@ import 'package:financial_manager/data/models/transaction/transaction_request_mo
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:financial_manager/domain/repos/transaction_repo_domain.dart';
 import 'package:intl/intl.dart';
-import '../database/drift_database.dart' as sql;
+import '../local/database/drift_database.dart' as sql;
 
 class TransactionRepoData implements TransactionRepoDomain {
   TransactionRepoData();
