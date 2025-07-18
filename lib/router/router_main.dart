@@ -1,9 +1,11 @@
+import 'package:financial_manager/data/local/user_shared_preferences.dart';
 import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/pages/account/account_view.dart';
 import 'package:financial_manager/view/pages/history/analysis_view.dart';
 import 'package:financial_manager/view/pages/history/finances_view.dart';
 import 'package:financial_manager/view/pages/history/history_view.dart';
 import 'package:financial_manager/view/pages/categories/categories_view.dart';
+import 'package:financial_manager/view/pages/password/password.dart';
 import 'package:financial_manager/view/pages/settings/settings_view.dart';
 import 'package:financial_manager/view/states/account/account_cubit.dart';
 import 'package:financial_manager/view/states/analysis/analysis_cubit.dart';
@@ -18,93 +20,151 @@ import 'package:go_router/go_router.dart';
 
 class RouterMain {
   static final router = GoRouter(
-    routes: [
-      GoRoute(path: "/", redirect: (context, state) => "/expense"),
-      StatefulShellRoute.indexedStack(
-        builder: (context, state, navigationShell) =>
-            FNavbar(body: navigationShell),
-        branches: [
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: "/expense",
-                builder: financesBuilder(false),
-                routes: [
-                  GoRoute(
-                    path: "/history",
-                    builder: historyBuilder(false),
-                    routes: historyRoutes(false),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: "/income",
-                builder: financesBuilder(true),
-                routes: [
-                  GoRoute(
-                    path: "/history",
-                    builder: historyBuilder(true),
-                    routes: historyRoutes(true),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: "/account",
-                builder: (context, state) => BlocProvider(
-                  create: (context) => AccountCubit(),
-                  child: AccountView(),
+    routes: UserSharedPreferences.settings.prefs.password == true
+        ? [
+            GoRoute(path: "/", builder: (context, state) => Password()),
+            StatefulShellRoute.indexedStack(
+              builder: (context, state, navigationShell) =>
+                  FNavbar(body: navigationShell),
+              branches: [
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/expense",
+                      builder: financesBuilder(false),
+                      routes: [
+                        GoRoute(
+                          path: "/history",
+                          builder: historyBuilder(false),
+                          routes: historyRoutes(false),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                routes: [
-                  // GoRoute(
-                  //   path: "/edit/:id",
-                  //   builder: (context, state) {
-                  //     final account = state.extra as AccountModel?;
-                  //     return BlocProvider(
-                  //       create: (context) => EditAccountCubit(sl()),
-                  //       child: EditAccountPage(
-                  //         id: state.pathParameters["id"],
-                  //         account: account,
-                  //       ),
-                  //     );
-                  //   },
-                  // ),
-                ],
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: "/categories",
-                builder: (context, state) => BlocProvider(
-                  create: (context) => CategoryCubit(),
-                  child: CategoriesView(),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/income",
+                      builder: financesBuilder(true),
+                      routes: [
+                        GoRoute(
+                          path: "/history",
+                          builder: historyBuilder(true),
+                          routes: historyRoutes(true),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-          StatefulShellBranch(
-            routes: [
-              GoRoute(
-                path: "/settings",
-                builder: (context, state) => BlocProvider(
-                  create: (context) => SettingsCubit(),
-                  child: SettingsView(),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/account",
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => AccountCubit(),
+                        child: AccountView(),
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
-        ],
-      ),
-    ],
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/categories",
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => CategoryCubit(),
+                        child: CategoriesView(),
+                      ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/settings",
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => SettingsCubit(),
+                        child: SettingsView(),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ]
+        : [
+            GoRoute(path: "/", redirect: (context, state) => "/expense"),
+            StatefulShellRoute.indexedStack(
+              builder: (context, state, navigationShell) =>
+                  FNavbar(body: navigationShell),
+              branches: [
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/expense",
+                      builder: financesBuilder(false),
+                      routes: [
+                        GoRoute(
+                          path: "/history",
+                          builder: historyBuilder(false),
+                          routes: historyRoutes(false),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/income",
+                      builder: financesBuilder(true),
+                      routes: [
+                        GoRoute(
+                          path: "/history",
+                          builder: historyBuilder(true),
+                          routes: historyRoutes(true),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/account",
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => AccountCubit(),
+                        child: AccountView(),
+                      ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/categories",
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => CategoryCubit(),
+                        child: CategoriesView(),
+                      ),
+                    ),
+                  ],
+                ),
+                StatefulShellBranch(
+                  routes: [
+                    GoRoute(
+                      path: "/settings",
+                      builder: (context, state) => BlocProvider(
+                        create: (context) => SettingsCubit(),
+                        child: SettingsView(),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ],
   );
 }
 
