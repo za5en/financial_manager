@@ -58,7 +58,9 @@ class _CategoriesViewState extends State<CategoriesView> {
                       isEmojiInContainer: true,
                       emoji: state.content.items[index].emoji,
                       rightSide: SizedBox(),
-                      backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                      backgroundColor: Theme.of(
+                        context,
+                      ).scaffoldBackgroundColor,
                     );
                   },
                 ),

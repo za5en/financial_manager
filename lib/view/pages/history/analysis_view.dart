@@ -97,7 +97,7 @@ class _AnalysisViewState extends State<AnalysisView> {
       final accountTransactions = AccountTransactions();
 
       final response = await accountTransactions.getTransactionsByPeriod(
-        1,
+        134,
         isStart ? pickedDate : startDate,
         isStart ? endDate : pickedDate,
         isIncome: widget.isIncome,
@@ -105,28 +105,30 @@ class _AnalysisViewState extends State<AnalysisView> {
 
       countSum(response);
 
-      setState(() {
-        transactions = response;
-        if (isStart) {
-          startDate = pickedDate;
-        } else {
-          endDate = pickedDate;
-        }
+      if (mounted) {
+        setState(() {
+          transactions = response;
+          if (isStart) {
+            startDate = pickedDate;
+          } else {
+            endDate = pickedDate;
+          }
 
-        var startDay = DateTime.now().copyWith(
-          hour: 0,
-          minute: 0,
-          second: 0,
-          millisecond: 0,
-          microsecond: 0,
-        );
-        context.read<AnalysisCubit>().getHistory(
-          startDate ??
-              DateTime(startDay.year, startDay.month - 1, startDay.day),
-          endDate ??
-              startDay.add(Duration(days: 1)).subtract(Duration(seconds: 1)),
-        );
-      });
+          var startDay = DateTime.now().copyWith(
+            hour: 0,
+            minute: 0,
+            second: 0,
+            millisecond: 0,
+            microsecond: 0,
+          );
+          context.read<AnalysisCubit>().getHistory(
+            startDate ??
+                DateTime(startDay.year, startDay.month - 1, startDay.day),
+            endDate ??
+                startDay.add(Duration(days: 1)).subtract(Duration(seconds: 1)),
+          );
+        });
+      }
     }
   }
 
@@ -136,9 +138,11 @@ class _AnalysisViewState extends State<AnalysisView> {
       localSum += double.parse(transaction.amount);
     }
 
-    setState(() {
-      sum = localSum;
-    });
+    if (mounted) {
+      setState(() {
+        sum = localSum;
+      });
+    }
   }
 
   void getTransactions() async {
@@ -153,10 +157,12 @@ class _AnalysisViewState extends State<AnalysisView> {
 
     countSum(response);
 
-    setState(() {
-      transactions = response;
-      groupInCategories();
-    });
+    if (mounted) {
+      setState(() {
+        transactions = response;
+        groupInCategories();
+      });
+    }
   }
 
   void groupInCategories() {
@@ -212,14 +218,19 @@ class _AnalysisViewState extends State<AnalysisView> {
     return Scaffold(
       appBar: FAppbar(
         title: AppLocalizations.of(context)?.analysis ?? 'Анализ',
-        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         leading: Padding(
           padding: EdgeInsets.all(h * 0.02),
           child: InkWell(
             onTap: () {
               Navigator.pop(context);
             },
-            child: FSvg(assetName: 'assets/images/back_arrow.svg'),
+            child: FSvg(
+              assetName: 'assets/images/back_arrow.svg',
+              color:
+                  Theme.of(context).primaryTextTheme.bodyMedium?.color ??
+                  Color(0xFF1C1C22),
+            ),
           ),
         ),
       ),
@@ -257,7 +268,7 @@ class _AnalysisViewState extends State<AnalysisView> {
                     ),
                   ),
                 ),
-                backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               ),
               FListLine(
                 height: h * 0.063,
@@ -287,7 +298,7 @@ class _AnalysisViewState extends State<AnalysisView> {
                     ),
                   ),
                 ),
-                backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
               ),
               FListLine(
                 height: h * 0.06,
@@ -295,9 +306,27 @@ class _AnalysisViewState extends State<AnalysisView> {
                 rightPadding: w * 0.04,
                 name: AppLocalizations.of(context)?.historySum ?? 'Сумма',
                 rightSide: transactions.isNotEmpty
-                    ? Text('$sum ${transactions[0].account?.currency}')
-                    : Text('$sum ₽'),
-                backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                    ? Text(
+                        '$sum ${transactions[0].account?.currency}',
+                        style: TextStyle(
+                          color:
+                              Theme.of(
+                                context,
+                              ).primaryTextTheme.bodyMedium?.color ??
+                              Color(0xFF1C1C22),
+                        ),
+                      )
+                    : Text(
+                        '$sum ₽',
+                        style: TextStyle(
+                          color:
+                              Theme.of(
+                                context,
+                              ).primaryTextTheme.bodyMedium?.color ??
+                              Color(0xFF1C1C22),
+                        ),
+                      ),
+                backgroundColor: Theme.of(context).scaffoldBackgroundColor,
                 isEmojiInContainer: true,
               ),
               SizedBox(
@@ -361,7 +390,15 @@ class _AnalysisViewState extends State<AnalysisView> {
                                       padding: EdgeInsets.only(left: w * 0.005),
                                       child: Text(
                                         '${((categoriesSum[categories[index].id] ?? 1) / sum * 100).toStringAsFixed(2)}% ${categories[index].name.length > 10 ? cutText(categories[index].name) : categories[index].name}',
-                                        style: TextStyle(fontSize: 11),
+                                        style: TextStyle(
+                                          fontSize: 11,
+                                          color:
+                                              Theme.of(context)
+                                                  .primaryTextTheme
+                                                  .bodyMedium
+                                                  ?.color ??
+                                              Color(0xFF1C1C22),
+                                        ),
                                         overflow: TextOverflow.ellipsis,
                                       ),
                                     ),
@@ -436,9 +473,25 @@ class _AnalysisViewState extends State<AnalysisView> {
                                 children: [
                                   Text(
                                     '${((categoriesSum[state.content.items[index].id] ?? 1) / sum * 100).toStringAsFixed(4)}%',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyMedium
+                                              ?.color ??
+                                          Color(0xFF1C1C22),
+                                    ),
                                   ),
                                   Text(
                                     '${categoriesSum[state.content.items[index].id]} ${state.content.items[index].currency}',
+                                    style: TextStyle(
+                                      color:
+                                          Theme.of(context)
+                                              .primaryTextTheme
+                                              .bodyMedium
+                                              ?.color ??
+                                          Color(0xFF1C1C22),
+                                    ),
                                   ),
                                 ],
                               ),
@@ -446,7 +499,9 @@ class _AnalysisViewState extends State<AnalysisView> {
                             FSvg(assetName: 'assets/images/more.svg'),
                           ],
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                       ),
                     );
                   },

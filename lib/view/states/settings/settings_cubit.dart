@@ -1,3 +1,4 @@
+import 'package:financial_manager/data/local/local_auth_service.dart';
 import 'package:financial_manager/view/states/settings/settings_view_model.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,7 +13,17 @@ class SettingsCubit extends Cubit<SettingsState> {
   void getSettings() async {
     emit(SettingsState.loading());
     try {
-      emit(SettingsState.content(SettingsViewModel.buildWith()));
+      emit(SettingsState.content(SettingsViewModel.buildWith(false)));
+    } on Exception catch (e) {
+      emit(SettingsState.error(e));
+    }
+  }
+
+  void getBiometricsInfo() async {
+    emit(SettingsState.loading());
+    try {
+      var auth = await LocalAuthService.canAuthenticate();
+      emit(SettingsState.content(SettingsViewModel.buildWith(auth)));
     } on Exception catch (e) {
       emit(SettingsState.error(e));
     }

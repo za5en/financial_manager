@@ -157,7 +157,7 @@ class AppLocalizationsRu extends AppLocalizations {
   String get settings => 'Настройки';
 
   @override
-  String get darkTheme => 'Тёмная тема';
+  String get darkTheme => 'Системная тема';
 
   @override
   String get mainColor => 'Основной цвет';
@@ -172,11 +172,72 @@ class AppLocalizationsRu extends AppLocalizations {
   String get passwordCode => 'Код пароль';
 
   @override
-  String get sync => 'Синхронизация';
+  String get syncronization => 'Синхронизация';
 
   @override
   String get language => 'Языки';
 
   @override
   String get about => 'О программе';
+
+  @override
+  String get select => 'Выбрать';
+
+  @override
+  String get biometrics => 'Вход по биометрии';
+
+  @override
+  String get codeToEnter => 'Введите код для входа\nв приложение';
+
+  @override
+  String get wrongCodeTryAgain => 'Введён неверный код, попробуйте ещё раз';
+
+  @override
+  String get forgotCode => 'Забыли код';
+
+  @override
+  String get warning => 'Внимание';
+
+  @override
+  String get resetCodeConfirm => 'Вы действительно хотите сбросить код пароль?';
+
+  @override
+  String get createCode => 'Создать код для входа';
+
+  @override
+  String get confirmCode => 'Подтвердите код';
+
+  @override
+  String get oldCode => 'Введите старый код';
+
+  @override
+  String get newCode => 'Введите новый код';
+
+  @override
+  String get next => 'Далее';
+
+  @override
+  String get setupCode => 'Установить код';
+
+  @override
+  String get cancelChanges => 'Отменить изменения';
+
+  @override
+  String get fourDigitCodeWarn => 'Необходимо ввести 4-х значный числовой код';
+
+  @override
+  String get codeSaved => 'Код успешно сохранён';
+
+  @override
+  String get differentCodes => 'Введённые коды не совпадают';
+
+  @override
+  String get wrongCode => 'Введён неверный код';
+
+  @override
+  String get biometricsError => 'Ошибка использования биометрии';
+
+  @override
+  String get biometricsErrorDesc =>
+      'Убедитесь, что в настройках устройства установлен отпечаток пальца или распознавание лица';
 }

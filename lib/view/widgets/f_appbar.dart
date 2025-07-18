@@ -1,3 +1,4 @@
+import 'package:financial_manager/view/resources/theme/main_color.dart';
 import 'package:flutter/material.dart';
 
 class FAppbar extends StatefulWidget implements PreferredSizeWidget {
@@ -27,14 +28,27 @@ class _FAppbarState extends State<FAppbar> {
       children: [
         Column(
           children: [
-            AppBar(
-              centerTitle: true,
-              backgroundColor:
-                  widget.backgroundColor ?? Color.fromRGBO(42, 232, 129, 1),
-              leading: widget.leading,
-              actions: widget.actions,
-              title: Text(widget.title, style: TextStyle(fontSize: 22)),
-              automaticallyImplyLeading: false,
+            ValueListenableBuilder(
+              valueListenable: MainColor.color,
+              builder: (context, value, child) => AppBar(
+                centerTitle: true,
+                backgroundColor: widget.backgroundColor ?? Color(value),
+                leading: widget.leading,
+                actions: widget.actions,
+                title: Text(
+                  widget.title,
+                  style: TextStyle(
+                    fontSize: 22,
+                    color: widget.backgroundColor != null
+                        ? Theme.of(
+                                context,
+                              ).primaryTextTheme.bodyMedium?.color ??
+                              Color(0xFF1C1C22)
+                        : Color(0xFF1C1C22),
+                  ),
+                ),
+                automaticallyImplyLeading: false,
+              ),
             ),
           ],
         ),

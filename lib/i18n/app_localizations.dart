@@ -395,7 +395,7 @@ abstract class AppLocalizations {
   /// No description provided for @darkTheme.
   ///
   /// In en, this message translates to:
-  /// **'Dark theme'**
+  /// **'System theme'**
   String get darkTheme;
 
   /// No description provided for @mainColor.
@@ -422,11 +422,11 @@ abstract class AppLocalizations {
   /// **'Password code'**
   String get passwordCode;
 
-  /// No description provided for @sync.
+  /// No description provided for @syncronization.
   ///
   /// In en, this message translates to:
   /// **'Synchronization'**
-  String get sync;
+  String get syncronization;
 
   /// No description provided for @language.
   ///
@@ -439,6 +439,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'About the app'**
   String get about;
+
+  /// No description provided for @select.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get select;
+
+  /// No description provided for @biometrics.
+  ///
+  /// In en, this message translates to:
+  /// **'Log in using biometrics'**
+  String get biometrics;
+
+  /// No description provided for @codeToEnter.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the login code'**
+  String get codeToEnter;
+
+  /// No description provided for @wrongCodeTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'An incorrect code has been entered, please try again'**
+  String get wrongCodeTryAgain;
+
+  /// No description provided for @forgotCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Forgot the code'**
+  String get forgotCode;
+
+  /// No description provided for @warning.
+  ///
+  /// In en, this message translates to:
+  /// **'Warning'**
+  String get warning;
+
+  /// No description provided for @resetCodeConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to reset your password?'**
+  String get resetCodeConfirm;
+
+  /// No description provided for @createCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a login code'**
+  String get createCode;
+
+  /// No description provided for @confirmCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm the code'**
+  String get confirmCode;
+
+  /// No description provided for @oldCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the old code'**
+  String get oldCode;
+
+  /// No description provided for @newCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a new code'**
+  String get newCode;
+
+  /// No description provided for @next.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get next;
+
+  /// No description provided for @setupCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Set up the code'**
+  String get setupCode;
+
+  /// No description provided for @cancelChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo changes'**
+  String get cancelChanges;
+
+  /// No description provided for @fourDigitCodeWarn.
+  ///
+  /// In en, this message translates to:
+  /// **'You must enter a 4-digit numeric code'**
+  String get fourDigitCodeWarn;
+
+  /// No description provided for @codeSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'The code was saved successfully'**
+  String get codeSaved;
+
+  /// No description provided for @differentCodes.
+  ///
+  /// In en, this message translates to:
+  /// **'The entered codes don\'t match'**
+  String get differentCodes;
+
+  /// No description provided for @wrongCode.
+  ///
+  /// In en, this message translates to:
+  /// **'An incorrect code has been entered'**
+  String get wrongCode;
+
+  /// No description provided for @biometricsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Biometrics usage error'**
+  String get biometricsError;
+
+  /// No description provided for @biometricsErrorDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Make sure that the fingerprint or face recognition is set in the device settings'**
+  String get biometricsErrorDesc;
 }
 
 class _AppLocalizationsDelegate

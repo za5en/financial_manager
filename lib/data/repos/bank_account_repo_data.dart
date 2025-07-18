@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:financial_manager/data/database/drift_database.dart' as sql;
+import 'package:financial_manager/data/local/database/drift_database.dart'
+    as sql;
 import 'package:financial_manager/data/enums/change_type.dart';
 import 'package:financial_manager/data/integration/api_client.dart';
 import 'package:financial_manager/data/methods/account_methods.dart';

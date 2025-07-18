@@ -1,6 +1,7 @@
 import 'dart:developer';
 
-import 'package:financial_manager/data/database/drift_database.dart' as sql;
+import 'package:financial_manager/data/local/database/drift_database.dart'
+    as sql;
 import 'package:financial_manager/data/integration/api_client.dart';
 import 'package:financial_manager/data/methods/category_methods.dart';
 import 'package:financial_manager/data/models/category/category_model.dart';
@@ -63,8 +64,9 @@ class CategoryRepoData implements CategoryRepoDomain {
         );
       }
 
-      final List<CategoryModel> categoriesByType =
-          categories.where((el) => el.isIncome == isIncome).toList();
+      final List<CategoryModel> categoriesByType = categories
+          .where((el) => el.isIncome == isIncome)
+          .toList();
       return categoriesByType;
     } catch (e) {
       log(e.toString());

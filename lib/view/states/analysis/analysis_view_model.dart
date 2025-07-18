@@ -36,12 +36,12 @@ class AnalysisViewModel {
         emoji ??= e.category?.emoji;
         moneySign ??= e.account?.currency;
         sign ??= e.account?.currency;
-        return TrancactionLocal.buildWith(
+        return TransactionLocal.buildWith(
           e.id ?? 1,
           e.category?.emoji ?? '',
           e.category?.name ?? '',
           e.comment,
-          int.parse(e.amount ?? '1'),
+          double.parse(e.amount ?? '1'),
           e.account?.currency ?? '₽',
           DateTime.parse(e.transactionDate ?? ''),
         );

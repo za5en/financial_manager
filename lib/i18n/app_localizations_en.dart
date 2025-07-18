@@ -158,7 +158,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settings => 'Settings';
 
   @override
-  String get darkTheme => 'Dark theme';
+  String get darkTheme => 'System theme';
 
   @override
   String get mainColor => 'Main color';
@@ -173,11 +173,74 @@ class AppLocalizationsEn extends AppLocalizations {
   String get passwordCode => 'Password code';
 
   @override
-  String get sync => 'Synchronization';
+  String get syncronization => 'Synchronization';
 
   @override
   String get language => 'Language selection';
 
   @override
   String get about => 'About the app';
+
+  @override
+  String get select => 'Select';
+
+  @override
+  String get biometrics => 'Log in using biometrics';
+
+  @override
+  String get codeToEnter => 'Enter the login code';
+
+  @override
+  String get wrongCodeTryAgain =>
+      'An incorrect code has been entered, please try again';
+
+  @override
+  String get forgotCode => 'Forgot the code';
+
+  @override
+  String get warning => 'Warning';
+
+  @override
+  String get resetCodeConfirm =>
+      'Are you sure you want to reset your password?';
+
+  @override
+  String get createCode => 'Create a login code';
+
+  @override
+  String get confirmCode => 'Confirm the code';
+
+  @override
+  String get oldCode => 'Enter the old code';
+
+  @override
+  String get newCode => 'Enter a new code';
+
+  @override
+  String get next => 'Next';
+
+  @override
+  String get setupCode => 'Set up the code';
+
+  @override
+  String get cancelChanges => 'Undo changes';
+
+  @override
+  String get fourDigitCodeWarn => 'You must enter a 4-digit numeric code';
+
+  @override
+  String get codeSaved => 'The code was saved successfully';
+
+  @override
+  String get differentCodes => 'The entered codes don\'t match';
+
+  @override
+  String get wrongCode => 'An incorrect code has been entered';
+
+  @override
+  String get biometricsError => 'Biometrics usage error';
+
+  @override
+  String get biometricsErrorDesc =>
+      'Make sure that the fingerprint or face recognition is set in the device settings';
 }

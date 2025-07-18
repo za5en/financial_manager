@@ -1,3 +1,4 @@
+import 'package:financial_manager/data/local/user_shared_preferences.dart';
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
 import 'package:financial_manager/i18n/app_localizations.dart';
 import 'package:financial_manager/view/link/account_transactions.dart';
@@ -10,6 +11,7 @@ import 'package:financial_manager/view/widgets/f_list_line.dart';
 import 'package:financial_manager/view/widgets/f_loading.dart';
 import 'package:financial_manager/view/widgets/f_svg.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
@@ -56,9 +58,11 @@ class _FinancesViewState extends State<FinancesView> {
 
     countSum(response);
 
-    setState(() {
-      transactions = response;
-    });
+    if (mounted) {
+      setState(() {
+        transactions = response;
+      });
+    }
   }
 
   void countSum(transactions) {
@@ -67,9 +71,11 @@ class _FinancesViewState extends State<FinancesView> {
       localSum += double.parse(transaction.amount);
     }
 
-    setState(() {
-      sum = localSum;
-    });
+    if (mounted) {
+      setState(() {
+        sum = localSum;
+      });
+    }
   }
 
   @override
@@ -112,6 +118,7 @@ class _FinancesViewState extends State<FinancesView> {
                 leftPadding: w * 0.04,
                 rightPadding: w * 0.04,
                 name: AppLocalizations.of(context)?.total ?? 'Всего',
+                nameColor: Color(0xFF1C1C22),
                 rightSide: transactions.isNotEmpty
                     ? Text('$sum ${transactions[0].account?.currency}')
                     : Text('$sum ₽'),
@@ -172,12 +179,21 @@ class _FinancesViewState extends State<FinancesView> {
                               padding: EdgeInsets.only(right: w * 0.035),
                               child: Text(
                                 '${transactions[index].amount} ${transactions[index].account?.currency}',
+                                style: TextStyle(
+                                  color:
+                                      Theme.of(
+                                        context,
+                                      ).primaryTextTheme.bodyMedium?.color ??
+                                      Color(0xFF1C1C22),
+                                ),
                               ),
                             ),
                             FSvg(assetName: 'assets/images/more.svg'),
                           ],
                         ),
-                        backgroundColor: Color.fromRGBO(254, 247, 255, 1),
+                        backgroundColor: Theme.of(
+                          context,
+                        ).scaffoldBackgroundColor,
                       ),
                     );
                   },
@@ -190,6 +206,9 @@ class _FinancesViewState extends State<FinancesView> {
       ),
       floatingActionButton: FFloatingActionButton(
         onPressed: () {
+          if (UserSharedPreferences.settings.prefs.haptic ?? false) {
+            HapticFeedback.lightImpact();
+          }
           showDialog(
             context: context,
             useRootNavigator: false,
