@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dio/dio.dart';
 import 'package:financial_manager/data/models/transaction/transaction_request_model.dart';
 import 'package:financial_manager/data/models/transaction/transaction_response_model.dart';
