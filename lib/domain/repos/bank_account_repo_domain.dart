@@ -15,4 +15,5 @@ abstract interface class BankAccountRepoDomain {
     AccountUpdateRequestModel accountUpdateModel,
   );
   Future<AccountHistoryResponseModel> getAccountHistory(int id);
+  Future<void> deleteAccount(int id);
 }

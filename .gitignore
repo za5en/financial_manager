@@ -13,6 +13,11 @@
 .swiftpm/
 migrate_working_dir/
 
+# Golden tests files and failures
+test/**/goldens/**/*.png
+test/**/failures/**/*.png
+!test/**/goldens/ci/*.png
+
 # IntelliJ related
 *.iml
 *.ipr
